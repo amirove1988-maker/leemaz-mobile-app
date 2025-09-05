@@ -180,13 +180,17 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   iconContainer: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
     backgroundColor: '#FCE4EC',
-    borderRadius: 40,
+    borderRadius: 60,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
+  },
+  logo: {
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: 24,
