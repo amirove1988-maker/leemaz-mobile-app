@@ -143,6 +143,12 @@ export default function EmailVerificationScreen({ navigation, route }: any) {
         </TouchableOpacity>
 
         {/* Resend Code */}
+        <TouchableOpacity style={styles.resendButton} onPress={handleGetCode}>
+          <Text style={styles.resendText}>
+            <Text style={styles.resendHighlight}>Get Code</Text> (for testing)
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.resendButton}>
           <Text style={styles.resendText}>
             Didn't receive the code? <Text style={styles.resendHighlight}>Resend</Text>
