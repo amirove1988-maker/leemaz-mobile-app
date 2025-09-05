@@ -39,7 +39,23 @@ export default function EmailVerificationScreen({ navigation, route }: any) {
     }
   };
 
-  const handleVerify = async () => {
+  const handleGetCode = async () => {
+    try {
+      const response = await apiClient.get(`/dev/verification-codes/${email}`);
+      const codes = response.data.codes;
+      if (codes && codes.length > 0) {
+        const latestCode = codes[0].code;
+        const codeArray = latestCode.split('');
+        setCode(codeArray);
+        Alert.alert('Code Retrieved', `Latest verification code: ${latestCode}`);
+      } else {
+        Alert.alert('No Codes', 'No verification codes found for this email');
+      }
+    } catch (error) {
+      console.error('Error fetching codes:', error);
+      Alert.alert('Error', 'Could not fetch verification codes');
+    }
+  };
     const verificationCode = code.join('');
     
     if (verificationCode.length !== 6) {
