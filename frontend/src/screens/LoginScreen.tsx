@@ -48,6 +48,11 @@ export default function LoginScreen({ navigation }: any) {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* Header */}
           <View style={styles.header}>
+            <Image
+              source={require('../../assets/images/leemaz-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.title}>Welcome to</Text>
             <Text style={styles.brandName}>Leemaz</Text>
             <Text style={styles.subtitle}>Syrian Women's Marketplace</Text>
