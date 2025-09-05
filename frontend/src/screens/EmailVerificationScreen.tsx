@@ -92,7 +92,11 @@ export default function EmailVerificationScreen({ navigation, route }: any) {
           </TouchableOpacity>
           
           <View style={styles.iconContainer}>
-            <Ionicons name="mail" size={48} color="#E91E63" />
+            <Image
+              source={require('../../assets/images/leemaz-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
           
           <Text style={styles.title}>Verify Your Email</Text>
