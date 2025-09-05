@@ -1,66 +1,56 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, ActivityIndicator, View, Text } from 'react-native';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
-import { StyleSheet, ActivityIndicator, View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-
-// Import screens
 import LoginScreen from '../src/screens/LoginScreen';
 import RegisterScreen from '../src/screens/RegisterScreen';
 import EmailVerificationScreen from '../src/screens/EmailVerificationScreen';
 import MainTabNavigator from '../src/navigation/MainTabNavigator';
 
-const Stack = createNativeStackNavigator();
-
-// Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
-
-function AppNavigator() {
+function AppContent() {
   const { user, isLoading } = useAuth();
-
-  useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+  const [currentScreen, setCurrentScreen] = useState('Login');
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#E91E63" />
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      >
-        {user ? (
-          // User is signed in
-          <Stack.Screen name="Main" component={MainTabNavigator} />
-        ) : (
-          // User is not signed in
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="EmailVerification" component={EmailVerificationScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  if (user) {
+    return <MainTabNavigator />;
+  }
+
+  // Navigation logic for auth screens
+  const navigate = (screenName: string, params?: any) => {
+    setCurrentScreen(screenName);
+  };
+
+  const goBack = () => {
+    setCurrentScreen('Login');
+  };
+
+  const authScreenProps = {
+    navigation: { navigate, goBack },
+    route: { params: {} }
+  };
+
+  switch (currentScreen) {
+    case 'Register':
+      return <RegisterScreen {...authScreenProps} />;
+    case 'EmailVerification':
+      return <EmailVerificationScreen {...authScreenProps} />;
+    default:
+      return <LoginScreen {...authScreenProps} />;
+  }
 }
 
 export default function App() {
   return (
     <AuthProvider>
-      <StatusBar style="auto" />
-      <AppNavigator />
+      <AppContent />
     </AuthProvider>
   );
 }
