@@ -56,6 +56,7 @@ export default function EmailVerificationScreen({ navigation, route }: any) {
       Alert.alert('Error', 'Could not fetch verification codes');
     }
   };
+  const handleVerify = async () => {
     const verificationCode = code.join('');
     
     if (verificationCode.length !== 6) {
