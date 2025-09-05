@@ -283,13 +283,13 @@ class ComprehensiveAPITester:
         
         # Calculate results
         test_results = [
-            health_ok, buyer_registered, seller_registered, invalid_blocked,
-            unverified_blocked, invalid_creds_blocked, auth_protected,
-            shop_auth_required, shop_listing_works, product_auth_required,
-            product_listing_works, product_filtering_works, review_auth_required,
-            review_listing_works, chat_auth_required, conversations_auth_required,
-            favorites_auth_required, favorites_list_auth_required, credits_auth_required,
-            admin_auth_required, invalid_endpoint_handled, malformed_handled
+            bool(health_ok), bool(buyer_registered), bool(seller_registered), bool(invalid_blocked),
+            bool(unverified_blocked), bool(invalid_creds_blocked), bool(auth_protected),
+            bool(shop_auth_required), bool(shop_listing_works), bool(product_auth_required),
+            bool(product_listing_works), bool(product_filtering_works), bool(review_auth_required),
+            bool(review_listing_works), bool(chat_auth_required), bool(conversations_auth_required),
+            bool(favorites_auth_required), bool(favorites_list_auth_required), bool(credits_auth_required),
+            bool(admin_auth_required), bool(invalid_endpoint_handled), bool(malformed_handled)
         ]
         
         passed = sum(test_results)
