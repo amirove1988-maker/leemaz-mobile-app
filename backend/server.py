@@ -14,9 +14,6 @@ import uuid
 import base64
 import io
 import secrets
-import smtplib
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
 from pathlib import Path
 from bson import ObjectId
 import asyncio
