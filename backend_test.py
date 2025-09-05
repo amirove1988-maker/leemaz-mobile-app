@@ -195,11 +195,14 @@ class LeemazeCommerceAPITester:
         buyer_response = self.make_request("POST", "/auth/register", verified_buyer)
         seller_response = self.make_request("POST", "/auth/register", verified_seller)
         
-        if buyer_response and seller_response:
+        buyer_success = buyer_response and buyer_response.status_code == 200
+        seller_success = seller_response and seller_response.status_code == 200
+        
+        if buyer_success and seller_success:
             self.users['verified_buyer'] = verified_buyer
             self.users['verified_seller'] = verified_seller
             
-        success = buyer_response and seller_response
+        success = buyer_success and seller_success
         self.log_test("Create Test Users", success, "Created verified test users for further testing")
         return success
     
