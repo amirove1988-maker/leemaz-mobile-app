@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 import { StyleSheet, ActivityIndicator, View } from 'react-native';
-import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 // Import screens
@@ -21,19 +20,11 @@ SplashScreen.preventAutoHideAsync();
 function AppNavigator() {
   const { user, isLoading } = useAuth();
 
-  const [fontsLoaded] = useFonts({
-    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
-    'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
-  });
-
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+    SplashScreen.hideAsync();
+  }, []);
 
-  if (!fontsLoaded || isLoading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#E91E63" />
