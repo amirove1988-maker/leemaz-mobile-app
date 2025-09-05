@@ -7,10 +7,12 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import { apiClient } from '../services/api';
 
 export default function EmailVerificationScreen({ navigation, route }: any) {
   const [code, setCode] = useState(['', '', '', '', '', '']);
