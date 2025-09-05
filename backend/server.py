@@ -644,6 +644,16 @@ async def add_credits_to_user(user_id: str, credits: int, current_user: dict = D
 async def health_check():
     return {"status": "healthy"}
 
+# Development endpoint to get verification codes (remove in production)
+@api_router.get("/dev/verification-codes/{email}")
+async def get_verification_codes(email: str):
+    """Development endpoint to retrieve verification codes for testing"""
+    codes = await db.verification_codes.find({"email": email}).sort("created_at", -1).limit(5).to_list(5)
+    return {
+        "email": email,
+        "codes": [{"code": code["code"], "created_at": code["created_at"], "expires_at": code["expires_at"]} for code in codes]
+    }
+
 # Include router
 app.include_router(api_router)
 
