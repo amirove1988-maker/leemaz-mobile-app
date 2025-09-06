@@ -370,12 +370,23 @@ async def get_my_shop(current_user: dict = Depends(get_current_user)):
     shop = await db.shops.find_one({"owner_id": current_user["_id"]})
     if not shop:
         raise HTTPException(status_code=404, detail="Shop not found")
+    
+    # Convert ObjectIds to strings
+    shop["_id"] = str(shop["_id"])
+    shop["owner_id"] = str(shop["owner_id"])
+    
     return Shop(**shop)
 
 @api_router.get("/shops", response_model=List[Shop])
 async def get_shops(skip: int = 0, limit: int = 20):
     # Only show approved shops to public
     shops = await db.shops.find({"is_active": True, "is_approved": True}).skip(skip).limit(limit).to_list(limit)
+    
+    # Convert ObjectIds to strings for each shop
+    for shop in shops:
+        shop["_id"] = str(shop["_id"])
+        shop["owner_id"] = str(shop["owner_id"])
+    
     return [Shop(**shop) for shop in shops]
 
 # Product Routes
