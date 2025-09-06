@@ -554,6 +554,218 @@ class LeemazeCommerceAPITester:
         # Return overall success - all critical tests should pass
         return True  # Return boolean for test success
     
+    def test_push_notifications_system(self):
+        """Test comprehensive push notification system functionality"""
+        print("\n" + "="*60)
+        print("PUSH NOTIFICATIONS SYSTEM TESTING")
+        print("="*60)
+        
+        # Step 1: Login as admin to get token for admin functions
+        admin_login = {
+            "email": "admin@leemaz.com",
+            "password": "admin123"
+        }
+        
+        response = self.make_request("POST", "/auth/login", admin_login)
+        if not response or response.status_code != 200:
+            self.log_test("Admin Login for Notifications Testing", False, 
+                         f"Failed to login as admin: {response.status_code if response else 'No response'}")
+            return False
+            
+        admin_token = response.json().get("access_token")
+        
+        # Step 2: Create a test user for notifications
+        user_data = {
+            "email": "notification.user@leemaz.com",
+            "password": "NotifyTest123!",
+            "full_name": "Notification Test User",
+            "user_type": "buyer",
+            "language": "en"
+        }
+        
+        response = self.make_request("POST", "/auth/register", user_data)
+        user_registered = response and response.status_code == 200
+        
+        if not user_registered:
+            self.log_test("User Registration for Notifications Testing", False, 
+                         f"Failed to register user: {response.status_code if response else 'No response'}")
+            return False
+            
+        # Step 3: Login as user to get token
+        user_login = {
+            "email": "notification.user@leemaz.com",
+            "password": "NotifyTest123!"
+        }
+        
+        response = self.make_request("POST", "/auth/login", user_login)
+        if not response or response.status_code != 200:
+            self.log_test("User Login for Notifications Testing", False, 
+                         f"Failed to login as user: {response.status_code if response else 'No response'}")
+            return False
+            
+        user_token = response.json().get("access_token")
+        
+        # Get user ID for notifications
+        response = self.make_request("GET", "/auth/me", token=user_token)
+        if not response or response.status_code != 200:
+            self.log_test("Get User Info for Notifications", False, 
+                         f"Failed to get user info: {response.status_code if response else 'No response'}")
+            return False
+            
+        user_info = response.json()
+        user_id = user_info.get("id")
+        
+        # Test 1: Test device token registration endpoint (Expected but not implemented)
+        device_token_data = {
+            "device_token": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+            "device_type": "ios"
+        }
+        
+        response = self.make_request("POST", "/notifications/register-token", device_token_data, token=user_token)
+        device_token_endpoint_exists = response and response.status_code != 404
+        
+        if not device_token_endpoint_exists:
+            self.log_test("Device Token Registration Endpoint", False, 
+                         "❌ MISSING: POST /api/notifications/register-token endpoint not implemented")
+        else:
+            device_token_works = response.status_code == 200
+            self.log_test("Device Token Registration", device_token_works, 
+                         f"Device token registration: {response.status_code}")
+        
+        # Test 2: Test admin send notification API (Should exist)
+        notification_data = {
+            "user_id": user_id,
+            "title": "Test Notification",
+            "message": "This is a test push notification from the admin panel",
+            "type": "general"
+        }
+        
+        response = self.make_request("POST", "/admin/notifications/send", notification_data, token=admin_token)
+        admin_send_works = response and response.status_code == 200
+        
+        self.log_test("Admin Send Notification API", admin_send_works, 
+                     f"Admin notification sending: {response.status_code if response else 'No response'}")
+        
+        # Test 3: Test user notification history (Should exist as /notifications)
+        response = self.make_request("GET", "/notifications", token=user_token)
+        user_notifications_works = response and response.status_code == 200
+        
+        notifications_received = []
+        if user_notifications_works:
+            notifications_received = response.json()
+            
+        self.log_test("User Notification History", user_notifications_works, 
+                     f"User notifications retrieval: {response.status_code if response else 'No response'}, Count: {len(notifications_received)}")
+        
+        # Test 4: Test /notifications/my endpoint (Expected but might not exist)
+        response = self.make_request("GET", "/notifications/my", token=user_token)
+        my_notifications_endpoint_exists = response and response.status_code != 404
+        
+        if not my_notifications_endpoint_exists:
+            self.log_test("My Notifications Endpoint", False, 
+                         "❌ MISSING: GET /api/notifications/my endpoint not implemented (using /api/notifications instead)")
+        else:
+            my_notifications_works = response.status_code == 200
+            self.log_test("My Notifications Endpoint", my_notifications_works, 
+                         f"My notifications: {response.status_code}")
+        
+        # Test 5: Test notification preferences endpoint (Expected but not implemented)
+        preferences_data = {
+            "push_notifications": True,
+            "email_notifications": False,
+            "sms_notifications": False,
+            "notification_types": ["new_message", "shop_approved", "order_update"]
+        }
+        
+        response = self.make_request("PUT", "/notifications/preferences", preferences_data, token=user_token)
+        preferences_endpoint_exists = response and response.status_code != 404
+        
+        if not preferences_endpoint_exists:
+            self.log_test("Notification Preferences Endpoint", False, 
+                         "❌ MISSING: PUT /api/notifications/preferences endpoint not implemented")
+        else:
+            preferences_works = response.status_code == 200
+            self.log_test("Notification Preferences", preferences_works, 
+                         f"Notification preferences: {response.status_code}")
+        
+        # Test 6: Test marking notification as read (Should exist)
+        if notifications_received and len(notifications_received) > 0:
+            notification_id = notifications_received[0].get("id")
+            if notification_id:
+                response = self.make_request("POST", f"/notifications/{notification_id}/read", token=user_token)
+                mark_read_works = response and response.status_code == 200
+                
+                self.log_test("Mark Notification as Read", mark_read_works, 
+                             f"Mark notification read: {response.status_code if response else 'No response'}")
+            else:
+                self.log_test("Mark Notification as Read", False, "No notification ID found to test")
+        else:
+            self.log_test("Mark Notification as Read", False, "No notifications available to test marking as read")
+        
+        # Test 7: Test unauthorized access to admin notification sending
+        response = self.make_request("POST", "/admin/notifications/send", notification_data, token=user_token)
+        admin_protected = response and response.status_code == 403
+        
+        self.log_test("Admin Notification Security", admin_protected, 
+                     f"Non-admin blocked from sending notifications: {admin_protected}")
+        
+        # Test 8: Test unauthorized access to notifications
+        response = self.make_request("GET", "/notifications")
+        no_auth_blocked = response and response.status_code == 401
+        
+        self.log_test("Notification Authentication", no_auth_blocked, 
+                     f"Unauthorized access blocked: {no_auth_blocked}")
+        
+        print("\n" + "="*60)
+        print("PUSH NOTIFICATIONS TESTING SUMMARY")
+        print("="*60)
+        
+        # Summary of what's implemented vs expected
+        implemented_endpoints = []
+        missing_endpoints = []
+        
+        if admin_send_works:
+            implemented_endpoints.append("✅ POST /api/admin/notifications/send")
+        else:
+            missing_endpoints.append("❌ POST /api/admin/notifications/send")
+            
+        if user_notifications_works:
+            implemented_endpoints.append("✅ GET /api/notifications")
+        else:
+            missing_endpoints.append("❌ GET /api/notifications")
+            
+        if not device_token_endpoint_exists:
+            missing_endpoints.append("❌ POST /api/notifications/register-token")
+        else:
+            implemented_endpoints.append("✅ POST /api/notifications/register-token")
+            
+        if not my_notifications_endpoint_exists:
+            missing_endpoints.append("❌ GET /api/notifications/my")
+        else:
+            implemented_endpoints.append("✅ GET /api/notifications/my")
+            
+        if not preferences_endpoint_exists:
+            missing_endpoints.append("❌ PUT /api/notifications/preferences")
+        else:
+            implemented_endpoints.append("✅ PUT /api/notifications/preferences")
+        
+        print("\nIMPLEMENTED ENDPOINTS:")
+        for endpoint in implemented_endpoints:
+            print(f"  {endpoint}")
+            
+        print("\nMISSING ENDPOINTS:")
+        for endpoint in missing_endpoints:
+            print(f"  {endpoint}")
+        
+        print("\n" + "="*60)
+        print("PUSH NOTIFICATIONS TESTING COMPLETED")
+        print("="*60)
+        
+        # Return success if core notification functionality works
+        # (admin send + user retrieve + security)
+        core_functionality_works = admin_send_works and user_notifications_works and admin_protected and no_auth_blocked
+        return core_functionality_works
+    
     def test_error_handling(self):
         """Test API error handling"""
         # Test invalid endpoint
