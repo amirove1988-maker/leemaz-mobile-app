@@ -601,6 +601,9 @@ class LeemazeCommerceAPITester:
         # PRIORITY TEST: Shop Logo Functionality
         test_results.append(self.test_shop_logo_functionality())
         
+        # PRIORITY TEST: Push Notifications System
+        test_results.append(self.test_push_notifications_system())
+        
         # Summary
         passed = sum(test_results)
         total = len(test_results)
