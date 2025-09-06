@@ -1,0 +1,88 @@
+{
+  "expo": {
+    "name": "Leemaz - Syrian Women's Marketplace",
+    "slug": "leemaz-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/leemaz-logo.png",
+    "userInterfaceStyle": "light",
+    "scheme": "leemaz",
+    "description": "A marketplace platform empowering Syrian women entrepreneurs to showcase and sell their products worldwide. Features bilingual Arabic/English support with RTL layout.",
+    "keywords": ["marketplace", "syrian", "women", "entrepreneurs", "arabic", "shopping", "e-commerce"],
+    "splash": {
+      "image": "./assets/images/leemaz-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E91E63"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leemaz.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos for product listings and shop logos.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to select images for products and shop logos."
+      }
+    },
+    "android": {
+      "package": "com.leemaz.mobile",
+      "versionCode": 1,
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
+      "minSdkVersion": 21,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/leemaz-logo.png",
+        "backgroundColor": "#E91E63"
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.VIBRATE"
+      ],
+      "icon": "./assets/images/leemaz-logo.png",
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "web": {
+      "favicon": "./assets/images/leemaz-logo.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your shop and products.",
+          "cameraPermission": "The app accesses your camera to let you take photos for your shop and products."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Leemaz to access your camera to take photos for products and shop logos."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/leemaz-logo.png",
+          "color": "#E91E63"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "leemaz-mobile-syrian-marketplace"
+      }
+    }
+  }
+}
