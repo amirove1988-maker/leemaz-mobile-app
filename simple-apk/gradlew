@@ -1,0 +1,6 @@
+#!/bin/bash
+
+GRADLE_HOME="/app/simple-apk/gradle-dist"
+export PATH="$GRADLE_HOME/bin:$PATH"
+
+gradle "$@"
