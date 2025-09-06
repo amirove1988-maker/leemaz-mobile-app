@@ -33,18 +33,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (token) {
-        // Set the token in api headers
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        // Get user info
-        const response = await api.get('/auth/me');
+        // Get user info using authAPI
+        const response = await authAPI.getMe();
         setUser(response.data);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       // Clear invalid token
       await AsyncStorage.removeItem('authToken');
-      delete api.defaults.headers.common['Authorization'];
     } finally {
       setIsLoading(false);
     }
@@ -52,17 +48,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await authAPI.login(email, password);
       const { access_token } = response.data;
       
       // Save token
       await AsyncStorage.setItem('authToken', access_token);
       
-      // Set token in api headers
-      api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-      
       // Get user info
-      const userResponse = await api.get('/auth/me');
+      const userResponse = await authAPI.getMe();
       setUser(userResponse.data);
       
       return true;
@@ -74,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (userData: any): Promise<boolean> => {
     try {
-      const response = await api.post('/auth/register', userData);
+      const response = await authAPI.register(userData);
       return true;
     } catch (error) {
       console.error('Registration failed:', error);
