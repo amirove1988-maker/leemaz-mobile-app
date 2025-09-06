@@ -955,6 +955,68 @@ async def send_notification(notification: NotificationCreate, current_user: dict
     
     return {"message": "Notification sent successfully"}
 
+@api_router.get("/notifications/my")
+async def get_my_notifications(current_user: dict = Depends(get_current_user)):
+    notifications = await db.notifications.find(
+        {"user_id": str(current_user["_id"])}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    for notification in notifications:
+        notification["_id"] = str(notification["_id"])
+    
+    return [Notification(**notif) for notif in notifications]
+
+@api_router.put("/notifications/preferences")
+async def update_notification_preferences(
+    preferences: NotificationPreferencesUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    user_id = str(current_user["_id"])
+    
+    # Check if preferences exist
+    existing_prefs = await db.notification_preferences.find_one({"user_id": user_id})
+    
+    preferences_dict = preferences.dict()
+    preferences_dict["user_id"] = user_id
+    preferences_dict["updated_at"] = datetime.utcnow()
+    
+    if existing_prefs:
+        # Update existing preferences
+        await db.notification_preferences.update_one(
+            {"user_id": user_id},
+            {"$set": preferences_dict}
+        )
+    else:
+        # Create new preferences
+        preferences_dict["created_at"] = datetime.utcnow()
+        await db.notification_preferences.insert_one(preferences_dict)
+    
+    return {"message": "Notification preferences updated successfully"}
+
+@api_router.get("/notifications/preferences")
+async def get_notification_preferences(current_user: dict = Depends(get_current_user)):
+    user_id = str(current_user["_id"])
+    
+    preferences = await db.notification_preferences.find_one({"user_id": user_id})
+    
+    if not preferences:
+        # Return default preferences
+        default_prefs = {
+            "user_id": user_id,
+            "push_notifications": True,
+            "email_notifications": False,
+            "sms_notifications": False,
+            "notification_types": ["new_message", "shop_approved", "order_update"],
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        result = await db.notification_preferences.insert_one(default_prefs)
+        default_prefs["_id"] = str(result.inserted_id)
+        return NotificationPreferences(**default_prefs)
+    
+    preferences["_id"] = str(preferences["_id"])
+    return NotificationPreferences(**preferences)
+
 @api_router.get("/notifications")
 async def get_user_notifications(current_user: dict = Depends(get_current_user)):
     notifications = await db.notifications.find(
