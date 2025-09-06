@@ -360,7 +360,8 @@ async def create_shop(shop_data: ShopCreate, current_user: dict = Depends(get_cu
     shop_dict["approved_by"] = None
     
     result = await db.shops.insert_one(shop_dict)
-    shop_dict["_id"] = result.inserted_id
+    shop_dict["_id"] = str(result.inserted_id)
+    shop_dict["owner_id"] = str(shop_dict["owner_id"])
     
     return Shop(**shop_dict)
 
