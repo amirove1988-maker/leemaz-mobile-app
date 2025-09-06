@@ -1,11 +1,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Use the proxy URL which redirects /api/* to backend on port 8001
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
