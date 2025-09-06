@@ -98,3 +98,4 @@ android-sdk/ -e
 *.env
 *.env.*
 simple-apk/gradle-8.0.2-bin.zip
+leemaz-frontend-ready.tar.gz
