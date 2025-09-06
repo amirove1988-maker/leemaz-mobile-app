@@ -160,17 +160,16 @@ class ReviewCreate(BaseModel):
     comment: str
 
 class Review(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    product_id: PyObjectId
-    buyer_id: PyObjectId
+    id: str = Field(alias="_id")
+    product_id: str
+    buyer_id: str
     rating: int
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
-        validate_by_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class ChatMessage(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
