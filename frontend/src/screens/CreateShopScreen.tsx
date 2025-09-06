@@ -112,6 +112,30 @@ export default function CreateShopScreen({ navigation }: any) {
 
           {/* Form */}
           <View style={styles.form}>
+            {/* Shop Logo Section */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Shop Logo (Optional)</Text>
+              
+              {formData.logo ? (
+                <View style={styles.logoContainer}>
+                  <Image
+                    source={{ uri: `data:image/jpeg;base64,${formData.logo}` }}
+                    style={styles.logoPreview}
+                    resizeMode="cover"
+                  />
+                  <TouchableOpacity style={styles.removeLogoButton} onPress={removeLogo}>
+                    <Ionicons name="close-circle" size={24} color="#ff4444" />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity style={styles.logoUploadButton} onPress={pickLogo}>
+                  <Ionicons name="camera" size={32} color="#666" />
+                  <Text style={styles.logoUploadText}>Add Shop Logo</Text>
+                  <Text style={styles.logoUploadSubtext}>Square image recommended</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Shop Name *</Text>
               <TextInput
