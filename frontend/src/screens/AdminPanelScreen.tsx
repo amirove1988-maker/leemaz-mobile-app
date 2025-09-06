@@ -816,6 +816,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  shopHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  adminShopLogo: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 12,
+  },
+  adminShopLogoPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FCE4EC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
   shopName: {
     fontSize: 18,
     fontWeight: 'bold',
