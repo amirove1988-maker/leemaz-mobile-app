@@ -181,7 +181,7 @@ const pickLogo = async () => {
 - Base64 storage system ✅
 
 ### **🎯 HOW TO TEST:**
-1. **URL**: https://leemaz-mobile.preview.emergentagent.com
+1. **URL**: https://mobile-marketplace-14.preview.emergentagent.com
 2. **Register as seller** → Create shop with logo
 3. **Login as admin** → admin@leemaz.com / admin123
 4. **Approve shop** → Logo preserved
@@ -205,4 +205,4 @@ const pickLogo = async () => {
 
 **Your Syrian Women's Marketplace now supports custom shop logos - giving every seller the power to build their unique brand identity!** 🦋✨
 
-**Test the logo functionality now at:** https://leemaz-mobile.preview.emergentagent.com
+**Test the logo functionality now at:** https://mobile-marketplace-14.preview.emergentagent.com

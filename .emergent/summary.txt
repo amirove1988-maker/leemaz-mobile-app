@@ -1,0 +1,64 @@
+<analysis>
+The trajectory details the conversion of a React + FastAPI + MongoDB web application, Leemaz, into a React Native/Expo mobile app. The AI engineer initiated the project by outlining a three-phase plan: Backend API Development, Mobile Frontend Development, and Mobile-Specific Features.
+
+Initially, the AI engineer focused on building the backend, implementing core e-commerce APIs (auth, shop, product, credit, review, chat, favorites, admin) and addressing Pydantic v2 compatibility issues. Concurrently, the frontend was developed, establishing a comprehensive UI and fixing navigation complexities by removing  in favor of a simpler Expo Router-compatible approach.
+
+Subsequent user requests led to significant modifications: the email verification system was removed and replaced with an admin shop approval workflow, complete with a dedicated admin panel and an admin user creation script. Login functionality was debugged and fixed by correctly configuring the API client and resolving remaining Pydantic  issues. Most recently, the AI engineer implemented a credit pricing control system accessible via the admin panel. The current task involves adding shop logo functionality, which is incomplete due to a duplicate declaration error causing a blank page.
+</analysis>
+
+<product_requirements>
+The user requested to convert the existing Leemaz React + FastAPI + MongoDB e-commerce web application, a Syrian Women's Marketplace, into a native mobile app using React Native/Expo for Android and iOS. The app must maintain all existing functionality: user registration with email verification (later changed to admin approval), buyer/seller user types, shop creation, product listing with a credit system (50 credits/listing, 100 free upon verification, later configurable by admin), image uploads (base64), product reviews, real-time chat, favorites, push notifications, bilingual support (English/Arabic RTL), and an admin panel for user/credit management. Mobile-specific features include camera integration for photos, push notifications, mobile-optimized UI/UX, and navigation. Design requirements specify Leemaz branding with a butterfly logo, a luxury pink/purple theme, and mobile-responsive layouts. Backend infrastructure (FastAPI, MongoDB, JWT auth, email/file upload systems) must be preserved. Key changes implemented by the AI engineer include removing email verification in favor of an admin shop approval process, creating a comprehensive admin panel for shop and user management, implementing dynamic credit pricing control via the admin panel, and ensuring a cash-on-delivery payment system.
+</product_requirements>
+
+<key_technical_concepts>
+-   **React Native/Expo**: Primary framework for mobile app development.
+-   **Expo Router**: File-based routing for navigation.
+-   **FastAPI**: Backend API development framework.
+-   **MongoDB**: Database for persistent storage.
+-   **JWT Authentication**: Secure user authentication.
+-   **Zustand**: State management (intended for complex apps).
+-   **Axios**: HTTP client for API requests.
+-   **Base64 Image Handling**: For product and shop logo uploads.
+-   **Admin Approval Workflow**: For shops and credit management.
+-   **Pydantic v2 Compatibility**: Resolution of model validation issues in FastAPI.
+</key_technical_concepts>
+
+<code_architecture>
+The project is a full-stack application with an Expo (React Native) frontend and a FastAPI (Python) backend using MongoDB.
+
+**Directory Structure:**
+
+
+-   **/app/backend/server.py**: This is the main FastAPI application file. It contains all the API routes for authentication, user management, shop management, product CRUD, credit system, reviews, chat, favorites, and admin functionalities. It was extensively modified to remove email verification, add admin shop approval logic, implement dynamic credit pricing, and support shop logo uploads.
+-   **/app/backend/models.py**: Defines the MongoDB data models using Pydantic. This file was frequently updated to ensure Pydantic v2 compatibility, especially for  handling, and to include new models like  for credit pricing and  for push notifications, and  to include .
+-   **/app/backend/create_admin.py**: A utility script created to programmatically create the initial admin user in the MongoDB database, simplifying admin panel setup.
+-   **/app/frontend/app/index.tsx**: The entry point for the Expo React Native application, using Expo Router for navigation. It was modified several times to refine navigation, integrate the main app structure, and fix styling issues. It now hosts the core navigation logic, including the admin panel routing.
+-   **/app/frontend/app.json**: Expo configuration file. Modified to set the app icon (), app name (Leemaz), and slug (leemaz-mobile), and splash screen.
+-   **/app/frontend/src/contexts/AuthContext.tsx**: Manages user authentication state and provides login/logout functionalities to the rest of the application. It interacts with the backend authentication APIs.
+-   **/app/frontend/src/services/api.ts**: Configures the Axios HTTP client for making API requests to the FastAPI backend. It ensures JWT tokens are attached to authenticated requests and was fixed to correctly point to the backend API endpoint.
+-   **/app/frontend/src/screens/LoginScreen.tsx**: The user login interface. It was updated to integrate the Leemaz logo prominently.
+-   **/app/frontend/src/screens/RegisterScreen.tsx**: The user registration interface. It was updated to remove email verification steps and branding.
+-   **/app/frontend/src/screens/AdminPanelScreen.tsx**: A central component for admin users, providing tabs for Dashboard, Shops, Users, Products, and Settings. It was significantly expanded to include shop approval, user credit management, and the newly added credit pricing control (Settings tab) and is being updated to show shop logos.
+-   **/app/frontend/src/screens/CreateShopScreen.tsx**: Allows sellers to create new shops. It was updated to include functionality for uploading a shop logo in base64 format.
+-   **/app/frontend/src/screens/ShopScreen.tsx**: Displays individual shop details. It was updated to show the uploaded shop logo.
+-   **/app/frontend/assets/leemaz.png**: The Leemaz logo image, used for the app icon, splash screen, and prominently displayed on login/verification (previously) and admin screens.
+</code_architecture>
+
+<pending_tasks>
+-   **Push Notifications (Frontend Integration)**: The backend system is ready, but Expo push notifications need frontend integration (device token registration, sending/receiving notifications).
+-   **Order Management Interface (Frontend Screens)**: The backend has a cash-on-delivery system and order management, but dedicated frontend screens for buyers to create orders and sellers to manage incoming orders are pending.
+-   **Fix Shop Logo Blank Page Error**: Resolve the duplicate declaration error causing the app to show a blank page when implementing shop logo functionality.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer was implementing the functionality to allow sellers to upload their shop logos. This involved modifying the backend ( and ) to store the logo in base64 format and updating several frontend screens:
+-   : Added image picker functionality, a state variable for the logo, and a UI section for logo upload.
+-   : Updated to display the shop logo if available.
+-   : Modified to display shop logos in the admin's shop management section.
+
+After these changes, the application displayed a blank page, and a screenshot () confirmed an error. The AI engineer identified a duplicate declaration error and created  to document the feature status before planning to fix the error.
+</current_work>
+
+<optional_next_step>
+Fix the duplicate declaration error in the frontend code that is causing the blank page to appear, which is related to the shop logo implementation.
+</optional_next_step>

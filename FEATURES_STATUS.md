@@ -169,7 +169,7 @@
 4. **Improve Chat with Real-time Updates** (2 hours)
 
 ### **📱 READY FOR TESTING:**
-- **URL**: https://leemaz-mobile.preview.emergentagent.com
+- **URL**: https://mobile-marketplace-14.preview.emergentagent.com
 - **Admin**: admin@leemaz.com / admin123
 - **Features**: Shop approval, credit management, product creation
 
