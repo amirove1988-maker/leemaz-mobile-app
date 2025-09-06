@@ -46,6 +46,7 @@ const translations = {
     yes: 'Yes',
     no: 'No',
     ok: 'OK',
+    or: 'or',
     
     // Profile
     logout: 'Logout',
