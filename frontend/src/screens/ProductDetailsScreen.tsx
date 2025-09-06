@@ -273,8 +273,17 @@ export default function ProductDetailsScreen({ route, navigation }: any) {
       {/* Bottom Actions */}
       {user && product.seller_id !== user.id && (
         <View style={styles.bottomActions}>
+          {user.user_type === 'buyer' && (
+            <TouchableOpacity
+              style={styles.orderButton}
+              onPress={() => navigation.navigate('CreateOrder', { product })}
+            >
+              <Ionicons name="cart-outline" size={20} color="#fff" />
+              <Text style={styles.orderButtonText}>Order Now</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
-            style={styles.contactButton}
+            style={[styles.contactButton, user.user_type === 'buyer' && styles.contactButtonSmall]}
             onPress={handleContactSeller}
           >
             <Ionicons name="chatbubble-outline" size={20} color="#fff" />
