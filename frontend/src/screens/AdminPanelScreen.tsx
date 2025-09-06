@@ -400,6 +400,7 @@ export default function AdminPanelScreen() {
       <View style={styles.content}>
         {currentView === 'dashboard' && renderDashboard()}
         {currentView === 'shops' && renderShops()}
+        {currentView === 'settings' && renderSettings()}
         {currentView === 'users' && (
           <View style={styles.comingSoon}>
             <Ionicons name="people-outline" size={64} color="#ccc" />
