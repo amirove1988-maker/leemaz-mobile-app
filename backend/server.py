@@ -85,7 +85,7 @@ class UserLogin(BaseModel):
     password: str
 
 class User(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: str = Field(alias="_id")
     email: EmailStr
     full_name: str
     user_type: str
@@ -98,9 +98,8 @@ class User(BaseModel):
     last_failed_login: Optional[datetime] = None
 
     class Config:
-        validate_by_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class EmailVerification(BaseModel):
     email: EmailStr
