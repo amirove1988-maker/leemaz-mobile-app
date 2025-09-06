@@ -337,6 +337,9 @@ async def create_shop(shop_data: ShopCreate, current_user: dict = Depends(get_cu
     shop_dict["owner_id"] = current_user["_id"]
     shop_dict["created_at"] = datetime.utcnow()
     shop_dict["is_active"] = True
+    shop_dict["is_approved"] = False  # Requires admin approval
+    shop_dict["approved_at"] = None
+    shop_dict["approved_by"] = None
     
     result = await db.shops.insert_one(shop_dict)
     shop_dict["_id"] = result.inserted_id
@@ -352,7 +355,8 @@ async def get_my_shop(current_user: dict = Depends(get_current_user)):
 
 @api_router.get("/shops", response_model=List[Shop])
 async def get_shops(skip: int = 0, limit: int = 20):
-    shops = await db.shops.find({"is_active": True}).skip(skip).limit(limit).to_list(limit)
+    # Only show approved shops to public
+    shops = await db.shops.find({"is_active": True, "is_approved": True}).skip(skip).limit(limit).to_list(limit)
     return [Shop(**shop) for shop in shops]
 
 # Product Routes
