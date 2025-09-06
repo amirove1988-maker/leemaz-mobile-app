@@ -65,6 +65,7 @@ export default function AdminPanelScreen() {
   const [selectedShopStatus, setSelectedShopStatus] = useState('pending');
   const [settings, setSettings] = useState<SystemSettings | null>(null);
   const [editingSettings, setEditingSettings] = useState(false);
+  const [tempSettings, setTempSettings] = useState<SystemSettings | null>(null);
 
   useEffect(() => {
     loadData();
