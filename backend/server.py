@@ -269,7 +269,10 @@ async def login(user_data: UserLogin):
 
 @api_router.get("/auth/me", response_model=User)
 async def get_current_user_info(current_user: dict = Depends(get_current_user)):
-    return User(**current_user)
+    # Convert ObjectId to string for the response
+    user_data = current_user.copy()
+    user_data["_id"] = str(current_user["_id"])
+    return User(**user_data)
 
 # Shop Routes
 @api_router.post("/shops", response_model=Shop)
