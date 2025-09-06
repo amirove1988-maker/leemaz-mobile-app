@@ -51,27 +51,6 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Custom ObjectId handler for MongoDB (Pydantic v2 compatible)
-from typing import Any
-from pydantic import field_validator
-from pydantic._internal._validators import ValidationInfo
-
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod  
-    def validate(cls, v: Any, info: ValidationInfo = None) -> ObjectId:
-        if not ObjectId.is_valid(v):
-            raise ValueError('Invalid objectid')
-        return ObjectId(v)
-
-    @classmethod
-    def __get_pydantic_json_schema__(cls, field_schema):
-        field_schema.update(type='string')
-        return field_schema
-
 # Pydantic Models
 class UserCreate(BaseModel):
     email: EmailStr
