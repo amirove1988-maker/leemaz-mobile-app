@@ -131,6 +131,8 @@ export default function AdminPanelScreen() {
       Alert.alert('Error', error.response?.data?.detail || 'Failed to update settings');
     }
   };
+
+  const confirmShopAction = (shop: Shop, action: 'approve' | 'reject') => {
     Alert.alert(
       `${action === 'approve' ? 'Approve' : 'Reject'} Shop`,
       `Are you sure you want to ${action} "${shop.name}" by ${shop.owner_name}?`,
