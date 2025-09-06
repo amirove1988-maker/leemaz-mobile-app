@@ -3,8 +3,8 @@ import { StyleSheet, ActivityIndicator, View, Text } from 'react-native';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 import LoginScreen from '../src/screens/LoginScreen';
 import RegisterScreen from '../src/screens/RegisterScreen';
-import EmailVerificationScreen from '../src/screens/EmailVerificationScreen';
 import MainTabNavigator from '../src/navigation/MainTabNavigator';
+import AdminPanelScreen from '../src/screens/AdminPanelScreen';
 
 function AppContent() {
   const { user, isLoading } = useAuth();
@@ -20,6 +20,15 @@ function AppContent() {
   }
 
   if (user) {
+    // Check if user is admin
+    const isAdmin = user.email === 'admin@leemaz.com' || 
+                   user.email === 'admin@admin.leemaz.com' || 
+                   user.email.endsWith('@admin.leemaz.com');
+    
+    if (isAdmin) {
+      return <AdminPanelScreen />;
+    }
+    
     return <MainTabNavigator />;
   }
 
@@ -40,8 +49,6 @@ function AppContent() {
   switch (currentScreen) {
     case 'Register':
       return <RegisterScreen {...authScreenProps} />;
-    case 'EmailVerification':
-      return <EmailVerificationScreen {...authScreenProps} />;
     default:
       return <LoginScreen {...authScreenProps} />;
   }
