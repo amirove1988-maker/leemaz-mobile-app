@@ -97,3 +97,4 @@ android-sdk/ -e
 # Environment files
 *.env
 *.env.*
+simple-apk/gradle-8.0.2-bin.zip
