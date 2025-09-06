@@ -51,7 +51,7 @@ export default function LoginScreen({ navigation }: any) {
           {/* Logo */}
           <View style={styles.logoContainer}>
             <Image 
-              source={require('../../assets/leemaz.png')} 
+              source={require('../../assets/images/leemaz-logo.png')} 
               style={styles.logo}
               resizeMode="contain"
             />
