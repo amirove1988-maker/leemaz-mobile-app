@@ -88,12 +88,14 @@ class ShopCreate(BaseModel):
     name: str
     description: str
     category: str
+    logo: Optional[str] = None  # base64 encoded logo
 
 class Shop(BaseModel):
     id: str = Field(alias="_id")
     name: str
     description: str
     category: str
+    logo: Optional[str] = None  # base64 encoded logo
     owner_id: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
