@@ -71,6 +71,12 @@ export default function AdminPanelScreen() {
     loadData();
   }, [currentView, selectedShopStatus]);
 
+  useEffect(() => {
+    if (settings) {
+      setTempSettings(settings);
+    }
+  }, [settings]);
+
   const loadData = async (refresh = false) => {
     if (refresh) setRefreshing(true);
     else setLoading(true);
