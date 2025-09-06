@@ -218,7 +218,15 @@ export default function ShopScreen({ navigation }: any) {
         {/* Shop Info */}
         <View style={styles.shopInfo}>
           <View style={styles.shopIcon}>
-            <Ionicons name="storefront" size={32} color="#E91E63" />
+            {shop.logo ? (
+              <Image
+                source={{ uri: `data:image/jpeg;base64,${shop.logo}` }}
+                style={styles.shopLogo}
+                resizeMode="cover"
+              />
+            ) : (
+              <Ionicons name="storefront" size={32} color="#E91E63" />
+            )}
           </View>
           <View style={styles.shopDetails}>
             <Text style={styles.shopName}>{shop.name}</Text>
