@@ -20,6 +20,7 @@ import OrdersScreen from '../screens/OrdersScreen';
 
 export default function MainTabNavigator() {
   const { user } = useAuth();
+  const { t, isRTL } = useLanguage();
   const [activeTab, setActiveTab] = useState('Home');
   const [screenStack, setScreenStack] = useState([{ screen: 'Home', params: {} }]);
 
