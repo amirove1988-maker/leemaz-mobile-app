@@ -46,6 +46,14 @@ interface Shop {
   is_active: boolean;
 }
 
+interface SystemSettings {
+  product_listing_cost: number;
+  initial_user_credits: number;
+  shop_approval_required: boolean;
+  payment_method: string;
+  platform_commission: number;
+}
+
 export default function AdminPanelScreen() {
   const { logout } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
