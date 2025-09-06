@@ -5,119 +5,121 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  Alert,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  ActivityIndicator,
+  ScrollView,
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function LoginScreen({ navigation }: any) {
+  const { login } = useAuth();
+  const { t, isRTL } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!email.trim() || !password.trim()) {
+      Alert.alert(t('error'), t('required'));
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     try {
-      await login(email.toLowerCase(), password);
-    } catch (error: any) {
-      Alert.alert('Login Failed', error.message);
+      const success = await login(email.trim(), password);
+      if (!success) {
+        Alert.alert(t('error'), t('loginError'));
+      }
+    } catch (error) {
+      Alert.alert(t('error'), t('networkError'));
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+    <SafeAreaView style={[styles.container, isRTL && styles.rtlContainer]}>
+      <KeyboardAvoidingView 
+        style={styles.keyboardView} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardContainer}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Image
-              source={require('../../assets/images/leemaz-logo.png')}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../../assets/leemaz.png')} 
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome to</Text>
-            <Text style={styles.brandName}>Leemaz</Text>
-            <Text style={styles.subtitle}>Syrian Women's Marketplace</Text>
           </View>
 
-          {/* Form */}
-          <View style={styles.form}>
+          {/* Welcome Text */}
+          <View style={[styles.welcomeContainer, isRTL && styles.rtlText]}>
+            <Text style={[styles.welcomeText, isRTL && styles.rtlText]}>
+              {t('welcome')}
+            </Text>
+            <Text style={[styles.brandName, isRTL && styles.rtlText]}>
+              Leemaz
+            </Text>
+            <Text style={[styles.subtitle, isRTL && styles.rtlText]}>
+              {t('subtitle')}
+            </Text>
+          </View>
+
+          {/* Login Form */}
+          <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
-                placeholder="Email"
+                style={[styles.input, isRTL && styles.rtlInput]}
+                placeholder={t('email')}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                autoCorrect={false}
+                textAlign={isRTL ? 'right' : 'left'}
+                placeholderTextColor="#999"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
               <TextInput
-                style={styles.textInput}
-                placeholder="Password"
+                style={[styles.input, isRTL && styles.rtlInput]}
+                placeholder={t('password')}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
+                secureTextEntry
+                textAlign={isRTL ? 'right' : 'left'}
+                placeholderTextColor="#999"
               />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                <Ionicons
-                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                  size={20}
-                  color="#666"
-                />
-              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+              style={[styles.loginButton, loading && styles.disabledButton]}
               onPress={handleLogin}
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.loginButtonText}>Sign In</Text>
-              )}
+              <Text style={styles.loginButtonText}>
+                {loading ? t('loading') : t('signIn')}
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
+              <Text style={[styles.dividerText, isRTL && styles.rtlText]}>
+                {t('or')}
+              </Text>
             </View>
 
             <TouchableOpacity
               style={styles.registerButton}
               onPress={() => navigation.navigate('Register')}
             >
-              <Text style={styles.registerButtonText}>Create New Account</Text>
+              <Text style={[styles.registerButtonText, isRTL && styles.rtlText]}>
+                {t('createAccount')}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -131,24 +133,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  keyboardContainer: {
+  rtlContainer: {
+    direction: 'rtl',
+  },
+  keyboardView: {
     flex: 1,
   },
-  scrollContainer: {
+  scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 24,
+    paddingHorizontal: 24,
   },
-  header: {
+  logoContainer: {
     alignItems: 'center',
     marginBottom: 40,
   },
   logo: {
     width: 120,
     height: 120,
-    marginBottom: 16,
   },
-  title: {
+  welcomeContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  welcomeText: {
     fontSize: 24,
     color: '#333',
     marginBottom: 8,
@@ -157,78 +165,65 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#E91E63',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
   },
-  form: {
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  formContainer: {
     width: '100%',
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 16,
+  },
+  input: {
+    backgroundColor: '#f8f9fa',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#e9ecef',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    marginBottom: 16,
-    backgroundColor: '#f8f9fa',
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  textInput: {
-    flex: 1,
     fontSize: 16,
     color: '#333',
   },
-  eyeIcon: {
-    padding: 4,
+  rtlInput: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   loginButton: {
     backgroundColor: '#E91E63',
-    borderRadius: 12,
     paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 24,
-    shadowColor: '#E91E63',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    marginBottom: 16,
   },
-  loginButtonDisabled: {
-    opacity: 0.7,
+  disabledButton: {
+    opacity: 0.6,
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   divider: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ddd',
+    marginVertical: 16,
   },
   dividerText: {
-    marginHorizontal: 16,
-    color: '#666',
+    color: '#999',
     fontSize: 14,
   },
   registerButton: {
     borderWidth: 1,
     borderColor: '#E91E63',
-    borderRadius: 12,
     paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
   },
   registerButtonText: {

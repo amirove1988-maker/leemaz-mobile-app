@@ -1,163 +1,217 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
+  TouchableOpacity,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Alert,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: any) {
   const { user, logout } = useAuth();
+  const { t, language, setLanguage, isRTL } = useLanguage();
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert(
-      'Logout',
+      t('logout'),
       'Are you sure you want to logout?',
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: logout, style: 'destructive' },
+        { text: t('cancel'), style: 'cancel' },
+        { 
+          text: t('logout'), 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (error) {
+              console.error('Logout error:', error);
+            }
+          }
+        }
       ]
+    );
+  };
+
+  const handleLanguageChange = async (lang: string) => {
+    await setLanguage(lang);
+    setShowLanguageModal(false);
+    
+    Alert.alert(
+      t('success'),
+      'Language changed successfully. Please restart the app for RTL changes to take full effect.',
+      [{ text: t('ok') }]
     );
   };
 
   const menuItems = [
     {
-      icon: 'diamond-outline',
-      title: 'Credits',
-      subtitle: `${user?.credits || 0} credits available`,
-      color: '#FFB000',
-      onPress: () => {},
-    },
-    {
+      id: 'language',
+      title: t('changeLanguage'),
       icon: 'language-outline',
-      title: 'Language',
-      subtitle: user?.language === 'ar' ? 'العربية' : 'English',
-      color: '#4CAF50',
-      onPress: () => {},
+      onPress: () => setShowLanguageModal(true),
     },
     {
-      icon: 'notifications-outline',
-      title: 'Notifications',
-      subtitle: 'Manage your notifications',
-      color: '#FF9800',
-      onPress: () => {},
+      id: 'settings',
+      title: t('settings'),
+      icon: 'settings-outline',
+      onPress: () => {}, // Placeholder
     },
     {
-      icon: 'help-circle-outline',
-      title: 'Help & Support',
-      subtitle: 'Get help with your account',
-      color: '#2196F3',
-      onPress: () => {},
-    },
-    {
-      icon: 'shield-outline',
-      title: 'Privacy Policy',
-      subtitle: 'Read our privacy policy',
-      color: '#9C27B0',
-      onPress: () => {},
-    },
-    {
-      icon: 'document-text-outline',
-      title: 'Terms of Service',
-      subtitle: 'Read our terms of service',
-      color: '#607D8B',
-      onPress: () => {},
+      id: 'logout',
+      title: t('logout'),
+      icon: 'log-out-outline',
+      onPress: handleLogout,
+      danger: true,
     },
   ];
 
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.errorText}>User not found</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
+    <SafeAreaView style={[styles.container, isRTL && styles.rtlContainer]}>
+      <ScrollView style={styles.scrollView}>
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user?.full_name.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          
+        <View style={[styles.header, isRTL && styles.rtlHeader]}>
+          <Text style={[styles.title, isRTL && styles.rtlText]}>
+            {t('myProfile')}
+          </Text>
+        </View>
+
+        {/* User Info */}
+        <View style={styles.userInfoCard}>
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>{user?.full_name}</Text>
-            <Text style={styles.userEmail}>{user?.email}</Text>
-            
-            <View style={styles.userBadge}>
-              <Ionicons
-                name={user?.user_type === 'seller' ? 'storefront' : 'bag'}
-                size={16}
-                color="#fff"
-              />
-              <Text style={styles.userType}>
-                {user?.user_type === 'seller' ? 'Seller' : 'Buyer'}
+            <View style={styles.avatar}>
+              <Ionicons name="person" size={40} color="#fff" />
+            </View>
+            <View style={[styles.userDetails, isRTL && styles.rtlUserDetails]}>
+              <Text style={[styles.userName, isRTL && styles.rtlText]}>
+                {user.full_name}
+              </Text>
+              <Text style={[styles.userEmail, isRTL && styles.rtlText]}>
+                {user.email}
+              </Text>
+              <Text style={[styles.userType, isRTL && styles.rtlText]}>
+                {t(user.user_type)}
               </Text>
             </View>
           </View>
-        </View>
 
-        {/* Stats for Sellers */}
-        {user?.user_type === 'seller' && (
-          <View style={styles.statsContainer}>
-            <View style={styles.statCard}>
-              <Ionicons name="bag" size={24} color="#E91E63" />
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Products</Text>
-            </View>
-            
-            <View style={styles.statCard}>
-              <Ionicons name="star" size={24} color="#FFB000" />
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Reviews</Text>
-            </View>
-            
-            <View style={styles.statCard}>
-              <Ionicons name="diamond" size={24} color="#4CAF50" />
-              <Text style={styles.statNumber}>{user?.credits || 0}</Text>
-              <Text style={styles.statLabel}>Credits</Text>
-            </View>
+          {/* Credits */}
+          <View style={[styles.creditsContainer, isRTL && styles.rtlCredits]}>
+            <Ionicons name="wallet-outline" size={20} color="#E91E63" />
+            <Text style={[styles.creditsText, isRTL && styles.rtlText]}>
+              {user.credits} {t('credits')}
+            </Text>
           </View>
-        )}
+        </View>
 
         {/* Menu Items */}
         <View style={styles.menuContainer}>
-          {menuItems.map((item, index) => (
+          {menuItems.map((item) => (
             <TouchableOpacity
-              key={index}
-              style={styles.menuItem}
+              key={item.id}
+              style={[
+                styles.menuItem,
+                isRTL && styles.rtlMenuItem,
+                item.danger && styles.dangerMenuItem
+              ]}
               onPress={item.onPress}
             >
-              <View style={[styles.menuIcon, { backgroundColor: `${item.color}20` }]}>
-                <Ionicons name={item.icon as any} size={24} color={item.color} />
+              <View style={[styles.menuItemContent, isRTL && styles.rtlMenuContent]}>
+                <Ionicons
+                  name={item.icon as any}
+                  size={24}
+                  color={item.danger ? '#f44336' : '#666'}
+                />
+                <Text style={[
+                  styles.menuItemText,
+                  isRTL && styles.rtlText,
+                  item.danger && styles.dangerText
+                ]}>
+                  {item.title}
+                </Text>
               </View>
-              
-              <View style={styles.menuInfo}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-              
-              <Ionicons name="chevron-forward" size={20} color="#ccc" />
+              <Ionicons
+                name={isRTL ? "chevron-back-outline" : "chevron-forward-outline"}
+                size={20}
+                color={item.danger ? '#f44336' : '#ccc'}
+              />
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={24} color="#ff4444" />
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
-
-        {/* App Info */}
-        <View style={styles.appInfo}>
-          <Text style={styles.appName}>Leemaz</Text>
-          <Text style={styles.appVersion}>Version 1.0.0</Text>
-          <Text style={styles.appDescription}>
-            Syrian Women's Marketplace
-          </Text>
-        </View>
       </ScrollView>
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={showLanguageModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowLanguageModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, isRTL && styles.rtlModal]}>
+            <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
+              {t('changeLanguage')}
+            </Text>
+            
+            <TouchableOpacity
+              style={[
+                styles.languageOption,
+                language === 'en' && styles.activeLanguage
+              ]}
+              onPress={() => handleLanguageChange('en')}
+            >
+              <Text style={[
+                styles.languageText,
+                language === 'en' && styles.activeLanguageText
+              ]}>
+                {t('english')}
+              </Text>
+              {language === 'en' && (
+                <Ionicons name="checkmark" size={20} color="#E91E63" />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.languageOption,
+                language === 'ar' && styles.activeLanguage
+              ]}
+              onPress={() => handleLanguageChange('ar')}
+            >
+              <Text style={[
+                styles.languageText,
+                language === 'ar' && styles.activeLanguageText
+              ]}>
+                {t('arabic')}
+              </Text>
+              {language === 'ar' && (
+                <Ionicons name="checkmark" size={20} color="#E91E63" />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setShowLanguageModal(false)}
+            >
+              <Text style={styles.modalCloseText}>{t('cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -165,155 +219,187 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f5f5f5',
   },
-  content: {
+  rtlContainer: {
+    direction: 'rtl',
+  },
+  scrollView: {
     flex: 1,
   },
   header: {
+    backgroundColor: '#E91E63',
+    padding: 20,
+    paddingTop: 20,
+  },
+  rtlHeader: {
+    alignItems: 'flex-end',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  userInfoCard: {
+    backgroundColor: 'white',
+    margin: 16,
+    borderRadius: 12,
+    padding: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 24,
     marginBottom: 16,
   },
   avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: '#E91E63',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 20,
   },
-  avatarText: {
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: 'bold',
-  },
-  userInfo: {
+  userDetails: {
+    marginLeft: 16,
     flex: 1,
   },
+  rtlUserDetails: {
+    marginLeft: 0,
+    marginRight: 16,
+    alignItems: 'flex-end',
+  },
   userName: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
   },
   userEmail: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 12,
-  },
-  userBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E91E63',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-  },
-  userType: {
-    color: '#fff',
     fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    padding: 16,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
+    color: '#666',
     marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
+  userType: {
+    fontSize: 12,
+    color: '#E91E63',
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  creditsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    padding: 12,
+    borderRadius: 8,
+  },
+  rtlCredits: {
+    flexDirection: 'row-reverse',
+  },
+  creditsText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 8,
   },
   menuContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     marginHorizontal: 16,
-    marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-  menuIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
+  rtlMenuItem: {
+    flexDirection: 'row-reverse',
   },
-  menuInfo: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
-  },
-  menuSubtitle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  logoutButton: {
+  menuItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#ff4444',
   },
-  logoutText: {
+  rtlMenuContent: {
+    flexDirection: 'row-reverse',
+  },
+  menuItemText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#ff4444',
-    marginLeft: 8,
+    color: '#333',
+    marginLeft: 12,
   },
-  appInfo: {
-    alignItems: 'center',
-    paddingVertical: 32,
+  dangerMenuItem: {
+    backgroundColor: '#fff5f5',
   },
-  appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#E91E63',
-    marginBottom: 4,
+  dangerText: {
+    color: '#f44336',
   },
-  appVersion: {
-    fontSize: 14,
+  errorText: {
+    fontSize: 16,
     color: '#666',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    minWidth: 280,
+    maxWidth: '90%',
+  },
+  rtlModal: {
+    alignItems: 'flex-end',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 8,
     marginBottom: 8,
   },
-  appDescription: {
-    fontSize: 14,
-    color: '#999',
+  activeLanguage: {
+    backgroundColor: '#f0f7ff',
+  },
+  languageText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  activeLanguageText: {
+    color: '#E91E63',
+    fontWeight: '600',
+  },
+  modalCloseButton: {
+    marginTop: 16,
+    padding: 12,
+    alignItems: 'center',
+  },
+  modalCloseText: {
+    fontSize: 16,
+    color: '#666',
   },
 });
