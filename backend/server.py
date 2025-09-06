@@ -275,21 +275,25 @@ async def register(user_data: UserCreate):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Get system settings for initial credits
+    settings = await db.system_settings.find_one()
+    initial_credits = settings["initial_user_credits"] if settings else 100
+    
     # Hash password
     hashed_password = get_password_hash(user_data.password)
     
-    # Create user with auto-verification and 100 credits
+    # Create user with auto-verification and dynamic initial credits
     user_dict = user_data.dict()
     user_dict["password"] = hashed_password
     user_dict["created_at"] = datetime.utcnow()
     user_dict["is_verified"] = True  # Auto-verified
-    user_dict["credits"] = 100  # Start with 100 credits
+    user_dict["credits"] = initial_credits  # Dynamic credits from settings
     user_dict["is_active"] = True
     user_dict["failed_login_attempts"] = 0
     
     result = await db.users.insert_one(user_dict)
     
-    return {"message": "User registered successfully. You can now sign in!"}
+    return {"message": f"User registered successfully. You received {initial_credits} free credits!"}
 
 @api_router.post("/auth/login", response_model=Token)
 async def login(user_data: UserLogin):
