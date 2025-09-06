@@ -51,14 +51,14 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Custom ObjectId handler for MongoDB
+# Custom ObjectId handler for MongoDB (Pydantic v2 compatible)
 class PyObjectId(ObjectId):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, handler):
         if not ObjectId.is_valid(v):
             raise ValueError('Invalid objectid')
         return ObjectId(v)
