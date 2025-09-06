@@ -137,23 +137,22 @@ class ProductCreate(BaseModel):
     shop_id: str
 
 class Product(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: str = Field(alias="_id")
     name: str
     description: str
     price: float
     category: str
     images: List[str] = []
-    shop_id: PyObjectId
-    seller_id: PyObjectId
+    shop_id: str
+    seller_id: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
     rating: float = 0.0
     review_count: int = 0
 
     class Config:
-        validate_by_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class ReviewCreate(BaseModel):
     product_id: str
