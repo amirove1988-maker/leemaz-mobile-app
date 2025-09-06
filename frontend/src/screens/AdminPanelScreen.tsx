@@ -80,6 +80,9 @@ export default function AdminPanelScreen() {
       } else if (currentView === 'shops') {
         const response = await apiClient.get(`/admin/shops?status=${selectedShopStatus}`);
         setShops(response.data);
+      } else if (currentView === 'settings') {
+        const response = await apiClient.get('/admin/settings');
+        setSettings(response.data);
       }
     } catch (error: any) {
       console.error('Error loading data:', error);
