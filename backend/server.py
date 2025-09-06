@@ -115,6 +115,9 @@ class Shop(BaseModel):
     owner_id: PyObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
+    is_approved: bool = False  # New field for admin approval
+    approved_at: Optional[datetime] = None
+    approved_by: Optional[PyObjectId] = None
 
     class Config:
         validate_by_name = True
