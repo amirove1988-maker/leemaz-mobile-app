@@ -1,0 +1,674 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  FlatList,
+  Image,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../contexts/AuthContext';
+import { apiClient } from '../services/api';
+
+interface DashboardStats {
+  users: {
+    total: number;
+    buyers: number;
+    sellers: number;
+  };
+  shops: {
+    total: number;
+    pending: number;
+    approved: number;
+  };
+  products: {
+    total: number;
+    active: number;
+  };
+  reviews: number;
+}
+
+interface Shop {
+  _id: string;
+  name: string;
+  description: string;
+  category: string;
+  owner_name: string;
+  owner_email: string;
+  created_at: string;
+  is_approved: boolean;
+  is_active: boolean;
+}
+
+export default function AdminPanelScreen() {
+  const { logout } = useAuth();
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [selectedShopStatus, setSelectedShopStatus] = useState('pending');
+
+  useEffect(() => {
+    loadData();
+  }, [currentView, selectedShopStatus]);
+
+  const loadData = async (refresh = false) => {
+    if (refresh) setRefreshing(true);
+    else setLoading(true);
+
+    try {
+      if (currentView === 'dashboard') {
+        const response = await apiClient.get('/admin/dashboard');
+        setStats(response.data);
+      } else if (currentView === 'shops') {
+        const response = await apiClient.get(`/admin/shops?status=${selectedShopStatus}`);
+        setShops(response.data);
+      }
+    } catch (error: any) {
+      console.error('Error loading data:', error);
+      Alert.alert('Error', error.response?.data?.detail || 'Failed to load data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleShopAction = async (shopId: string, action: 'approve' | 'reject') => {
+    try {
+      const endpoint = action === 'approve' ? 'approve' : 'reject';
+      await apiClient.post(`/admin/shops/${shopId}/${endpoint}`);
+      
+      Alert.alert(
+        'Success',
+        `Shop ${action}d successfully!`,
+        [{ text: 'OK', onPress: () => loadData() }]
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error.response?.data?.detail || `Failed to ${action} shop`);
+    }
+  };
+
+  const confirmShopAction = (shop: Shop, action: 'approve' | 'reject') => {
+    Alert.alert(
+      `${action === 'approve' ? 'Approve' : 'Reject'} Shop`,
+      `Are you sure you want to ${action} "${shop.name}" by ${shop.owner_name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: action === 'approve' ? 'Approve' : 'Reject',
+          style: action === 'approve' ? 'default' : 'destructive',
+          onPress: () => handleShopAction(shop._id, action),
+        },
+      ]
+    );
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const renderDashboard = () => {
+    if (!stats) return null;
+
+    return (
+      <ScrollView
+        contentContainerStyle={styles.dashboardContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} />}
+      >
+        <View style={styles.statsGrid}>
+          {/* Users Stats */}
+          <View style={styles.statCard}>
+            <View style={[styles.statIcon, { backgroundColor: '#E3F2FD' }]}>
+              <Ionicons name="people" size={24} color="#1976D2" />
+            </View>
+            <Text style={styles.statNumber}>{stats.users.total}</Text>
+            <Text style={styles.statLabel}>Total Users</Text>
+            <Text style={styles.statDetail}>
+              {stats.users.buyers} Buyers • {stats.users.sellers} Sellers
+            </Text>
+          </View>
+
+          {/* Shops Stats */}
+          <View style={styles.statCard}>
+            <View style={[styles.statIcon, { backgroundColor: '#FCE4EC' }]}>
+              <Ionicons name="storefront" size={24} color="#E91E63" />
+            </View>
+            <Text style={styles.statNumber}>{stats.shops.total}</Text>
+            <Text style={styles.statLabel}>Total Shops</Text>
+            <Text style={styles.statDetail}>
+              {stats.shops.pending} Pending • {stats.shops.approved} Approved
+            </Text>
+          </View>
+
+          {/* Products Stats */}
+          <View style={styles.statCard}>
+            <View style={[styles.statIcon, { backgroundColor: '#E8F5E8' }]}>
+              <Ionicons name="bag" size={24} color="#4CAF50" />
+            </View>
+            <Text style={styles.statNumber}>{stats.products.total}</Text>
+            <Text style={styles.statLabel}>Total Products</Text>
+            <Text style={styles.statDetail}>{stats.products.active} Active</Text>
+          </View>
+
+          {/* Reviews Stats */}
+          <View style={styles.statCard}>
+            <View style={[styles.statIcon, { backgroundColor: '#FFF3E0' }]}>
+              <Ionicons name="star" size={24} color="#FF9800" />
+            </View>
+            <Text style={styles.statNumber}>{stats.reviews}</Text>
+            <Text style={styles.statLabel}>Total Reviews</Text>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setCurrentView('shops')}
+          >
+            <Ionicons name="storefront-outline" size={20} color="#E91E63" />
+            <Text style={styles.actionButtonText}>Manage Shops</Text>
+            {stats.shops.pending > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{stats.shops.pending}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setCurrentView('users')}
+          >
+            <Ionicons name="people-outline" size={20} color="#1976D2" />
+            <Text style={styles.actionButtonText}>Manage Users</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setCurrentView('products')}
+          >
+            <Ionicons name="bag-outline" size={20} color="#4CAF50" />
+            <Text style={styles.actionButtonText}>View Products</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  };
+
+  const renderShop = ({ item }: { item: Shop }) => (
+    <View style={styles.shopCard}>
+      <View style={styles.shopHeader}>
+        <Text style={styles.shopName}>{item.name}</Text>
+        <View style={[
+          styles.statusBadge,
+          { backgroundColor: item.is_approved ? '#E8F5E8' : '#FFF3E0' }
+        ]}>
+          <Text style={[
+            styles.statusText,
+            { color: item.is_approved ? '#4CAF50' : '#FF9800' }
+          ]}>
+            {item.is_approved ? 'Approved' : 'Pending'}
+          </Text>
+        </View>
+      </View>
+
+      <Text style={styles.shopDescription} numberOfLines={2}>
+        {item.description}
+      </Text>
+      
+      <View style={styles.shopMeta}>
+        <Text style={styles.shopOwner}>👤 {item.owner_name}</Text>
+        <Text style={styles.shopEmail}>📧 {item.owner_email}</Text>
+        <Text style={styles.shopCategory}>🏷️ {item.category}</Text>
+        <Text style={styles.shopDate}>📅 {formatDate(item.created_at)}</Text>
+      </View>
+
+      {!item.is_approved && (
+        <View style={styles.shopActions}>
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.approveBtn]}
+            onPress={() => confirmShopAction(item, 'approve')}
+          >
+            <Ionicons name="checkmark" size={16} color="#fff" />
+            <Text style={styles.actionBtnText}>Approve</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.rejectBtn]}
+            onPress={() => confirmShopAction(item, 'reject')}
+          >
+            <Ionicons name="close" size={16} color="#fff" />
+            <Text style={styles.actionBtnText}>Reject</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+
+  const renderShops = () => (
+    <View style={styles.shopsContainer}>
+      {/* Filter Tabs */}
+      <View style={styles.filterTabs}>
+        {['pending', 'approved', 'all'].map((status) => (
+          <TouchableOpacity
+            key={status}
+            style={[
+              styles.filterTab,
+              selectedShopStatus === status && styles.activeFilterTab,
+            ]}
+            onPress={() => setSelectedShopStatus(status)}
+          >
+            <Text
+              style={[
+                styles.filterTabText,
+                selectedShopStatus === status && styles.activeFilterTabText,
+              ]}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <FlatList
+        data={shops}
+        renderItem={renderShop}
+        keyExtractor={(item) => item._id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} />}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="storefront-outline" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>No {selectedShopStatus} shops found</Text>
+          </View>
+        }
+      />
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#E91E63" />
+          <Text style={styles.loadingText}>Loading admin panel...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image
+            source={require('../../assets/images/leemaz-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <View>
+            <Text style={styles.headerTitle}>Admin Panel</Text>
+            <Text style={styles.headerSubtitle}>Leemaz Management</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <Ionicons name="log-out-outline" size={24} color="#ff4444" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Navigation Tabs */}
+      <View style={styles.navTabs}>
+        {[
+          { key: 'dashboard', label: 'Dashboard', icon: 'analytics' },
+          { key: 'shops', label: 'Shops', icon: 'storefront' },
+          { key: 'users', label: 'Users', icon: 'people' },
+          { key: 'products', label: 'Products', icon: 'bag' },
+        ].map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[
+              styles.navTab,
+              currentView === tab.key && styles.activeNavTab,
+            ]}
+            onPress={() => setCurrentView(tab.key)}
+          >
+            <Ionicons
+              name={tab.icon as any}
+              size={20}
+              color={currentView === tab.key ? '#E91E63' : '#666'}
+            />
+            <Text
+              style={[
+                styles.navTabText,
+                currentView === tab.key && styles.activeNavTabText,
+              ]}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Content */}
+      <View style={styles.content}>
+        {currentView === 'dashboard' && renderDashboard()}
+        {currentView === 'shops' && renderShops()}
+        {currentView === 'users' && (
+          <View style={styles.comingSoon}>
+            <Ionicons name="people-outline" size={64} color="#ccc" />
+            <Text style={styles.comingSoonText}>User Management Coming Soon</Text>
+          </View>
+        )}
+        {currentView === 'products' && (
+          <View style={styles.comingSoon}>
+            <Ionicons name="bag-outline" size={64} color="#ccc" />
+            <Text style={styles.comingSoonText}>Product Management Coming Soon</Text>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
+  logoutButton: {
+    padding: 8,
+  },
+  navTabs: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  navTab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  activeNavTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#E91E63',
+  },
+  navTabText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  activeNavTabText: {
+    color: '#E91E63',
+    fontWeight: '600',
+  },
+  content: {
+    flex: 1,
+  },
+  dashboardContainer: {
+    padding: 16,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  statCard: {
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  statIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  statDetail: {
+    fontSize: 12,
+    color: '#999',
+    textAlign: 'center',
+  },
+  quickActions: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#f8f9fa',
+    marginBottom: 8,
+  },
+  actionButtonText: {
+    fontSize: 16,
+    color: '#333',
+    marginLeft: 12,
+    flex: 1,
+  },
+  badge: {
+    backgroundColor: '#E91E63',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  shopsContainer: {
+    flex: 1,
+  },
+  filterTabs: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  filterTab: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: '#f8f9fa',
+  },
+  activeFilterTab: {
+    backgroundColor: '#E91E63',
+  },
+  filterTabText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  activeFilterTabText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  shopCard: {
+    backgroundColor: '#fff',
+    margin: 16,
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  shopHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  shopName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    flex: 1,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  shopDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  shopMeta: {
+    marginBottom: 16,
+  },
+  shopOwner: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  shopEmail: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  shopCategory: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  shopDate: {
+    fontSize: 14,
+    color: '#999',
+  },
+  shopActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  actionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  approveBtn: {
+    backgroundColor: '#4CAF50',
+  },
+  rejectBtn: {
+    backgroundColor: '#ff4444',
+  },
+  actionBtnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 16,
+  },
+  comingSoon: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  comingSoonText: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 16,
+  },
+});
