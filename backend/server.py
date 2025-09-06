@@ -787,6 +787,175 @@ async def add_credits_to_user_admin(user_id: str, credits: int, current_user: di
     action = "added" if credits > 0 else "deducted"
     return {"message": f"{abs(credits)} credits {action} successfully"}
 
+# System Settings Management
+@api_router.get("/admin/settings")
+async def get_system_settings(current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    settings = await db.system_settings.find_one()
+    if not settings:
+        # Create default settings
+        default_settings = {
+            "product_listing_cost": 50,
+            "initial_user_credits": 100,
+            "shop_approval_required": True,
+            "payment_method": "cash",
+            "platform_commission": 0.05,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        result = await db.system_settings.insert_one(default_settings)
+        default_settings["_id"] = str(result.inserted_id)
+        return SystemSettings(**default_settings)
+    
+    settings["_id"] = str(settings["_id"])
+    return SystemSettings(**settings)
+
+@api_router.post("/admin/settings")
+async def update_system_settings(
+    product_listing_cost: int,
+    initial_user_credits: int,
+    shop_approval_required: bool = True,
+    payment_method: str = "cash",
+    platform_commission: float = 0.05,
+    current_user: dict = Depends(get_current_user)
+):
+    await check_admin_access(current_user)
+    
+    settings_update = {
+        "product_listing_cost": product_listing_cost,
+        "initial_user_credits": initial_user_credits,
+        "shop_approval_required": shop_approval_required,
+        "payment_method": payment_method,
+        "platform_commission": platform_commission,
+        "updated_at": datetime.utcnow()
+    }
+    
+    # Update or create settings
+    await db.system_settings.update_one(
+        {},
+        {"$set": settings_update},
+        upsert=True
+    )
+    
+    return {"message": "System settings updated successfully"}
+
+# Notification System
+@api_router.post("/admin/notifications/send")
+async def send_notification(notification: NotificationCreate, current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    notification_dict = notification.dict()
+    notification_dict["created_at"] = datetime.utcnow()
+    notification_dict["is_read"] = False
+    
+    result = await db.notifications.insert_one(notification_dict)
+    
+    # Here you would integrate with Expo Push Notifications
+    # For now, we'll just store in database
+    
+    return {"message": "Notification sent successfully"}
+
+@api_router.get("/notifications")
+async def get_user_notifications(current_user: dict = Depends(get_current_user)):
+    notifications = await db.notifications.find(
+        {"user_id": str(current_user["_id"])}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    for notification in notifications:
+        notification["_id"] = str(notification["_id"])
+    
+    return [Notification(**notif) for notif in notifications]
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, current_user: dict = Depends(get_current_user)):
+    await db.notifications.update_one(
+        {"_id": ObjectId(notification_id), "user_id": str(current_user["_id"])},
+        {"$set": {"is_read": True}}
+    )
+    return {"message": "Notification marked as read"}
+
+# Order Management (Cash on Delivery)
+@api_router.post("/orders", response_model=Order)
+async def create_order(order_data: OrderCreate, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] != "buyer":
+        raise HTTPException(status_code=403, detail="Only buyers can create orders")
+    
+    # Get product and seller info
+    product = await db.products.find_one({"_id": ObjectId(order_data.product_id)})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    total_amount = product["price"] * order_data.quantity
+    
+    order_dict = order_data.dict()
+    order_dict["buyer_id"] = str(current_user["_id"])
+    order_dict["seller_id"] = str(product["seller_id"])
+    order_dict["total_amount"] = total_amount
+    order_dict["status"] = "pending"
+    order_dict["created_at"] = datetime.utcnow()
+    
+    result = await db.orders.insert_one(order_dict)
+    order_dict["_id"] = str(result.inserted_id)
+    
+    # Send notification to seller
+    await db.notifications.insert_one({
+        "user_id": str(product["seller_id"]),
+        "title": "New Order Received!",
+        "message": f"You have a new order for {product['name']}. Cash on delivery: ${total_amount}",
+        "type": "new_order",
+        "is_read": False,
+        "created_at": datetime.utcnow()
+    })
+    
+    return Order(**order_dict)
+
+@api_router.get("/orders")
+async def get_user_orders(current_user: dict = Depends(get_current_user)):
+    user_id = str(current_user["_id"])
+    
+    if current_user["user_type"] == "buyer":
+        orders = await db.orders.find({"buyer_id": user_id}).sort("created_at", -1).to_list(50)
+    else:
+        orders = await db.orders.find({"seller_id": user_id}).sort("created_at", -1).to_list(50)
+    
+    # Add product information
+    for order in orders:
+        product = await db.products.find_one({"_id": ObjectId(order["product_id"])})
+        if product:
+            order["product_name"] = product["name"]
+            order["product_image"] = product["images"][0] if product["images"] else None
+        order["_id"] = str(order["_id"])
+    
+    return [Order(**order) for order in orders]
+
+@api_router.post("/orders/{order_id}/status")
+async def update_order_status(order_id: str, status: str, current_user: dict = Depends(get_current_user)):
+    # Only seller can update order status
+    order = await db.orders.find_one({"_id": ObjectId(order_id)})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order["seller_id"] != str(current_user["_id"]):
+        raise HTTPException(status_code=403, detail="Only the seller can update order status")
+    
+    await db.orders.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"status": status}}
+    )
+    
+    # Notify buyer
+    await db.notifications.insert_one({
+        "user_id": order["buyer_id"],
+        "title": "Order Status Updated",
+        "message": f"Your order status has been updated to: {status}",
+        "type": "order_update",
+        "is_read": False,
+        "created_at": datetime.utcnow()
+    })
+    
+    return {"message": f"Order status updated to {status}"}
+
 # Health check
 @api_router.get("/health")
 async def health_check():
