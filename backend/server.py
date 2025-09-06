@@ -52,13 +52,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Custom ObjectId handler for MongoDB (Pydantic v2 compatible)
+from typing import Any
+from pydantic import field_validator
+from pydantic._internal._validators import ValidationInfo
+
 class PyObjectId(ObjectId):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
 
-    @classmethod
-    def validate(cls, v, handler):
+    @classmethod  
+    def validate(cls, v: Any, info: ValidationInfo = None) -> ObjectId:
         if not ObjectId.is_valid(v):
             raise ValueError('Invalid objectid')
         return ObjectId(v)
