@@ -1,0 +1,63 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.leemaz.mobile"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->/app/simple-apk/app/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="34" />
+9-->/app/simple-apk/app/src/main/AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/app/simple-apk/app/src/main/AndroidManifest.xml:7:5-67
+11-->/app/simple-apk/app/src/main/AndroidManifest.xml:7:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->/app/simple-apk/app/src/main/AndroidManifest.xml:8:5-79
+12-->/app/simple-apk/app/src/main/AndroidManifest.xml:8:22-76
+13    <uses-permission android:name="android.permission.CAMERA" />
+13-->/app/simple-apk/app/src/main/AndroidManifest.xml:9:5-65
+13-->/app/simple-apk/app/src/main/AndroidManifest.xml:9:22-62
+14    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+14-->/app/simple-apk/app/src/main/AndroidManifest.xml:10:5-80
+14-->/app/simple-apk/app/src/main/AndroidManifest.xml:10:22-77
+15    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+15-->/app/simple-apk/app/src/main/AndroidManifest.xml:11:5-81
+15-->/app/simple-apk/app/src/main/AndroidManifest.xml:11:22-78
+16
+17    <application
+17-->/app/simple-apk/app/src/main/AndroidManifest.xml:13:5-29:19
+18        android:allowBackup="true"
+18-->/app/simple-apk/app/src/main/AndroidManifest.xml:14:9-35
+19        android:debuggable="true"
+20        android:icon="@mipmap/ic_launcher"
+20-->/app/simple-apk/app/src/main/AndroidManifest.xml:15:9-43
+21        android:label="@string/app_name"
+21-->/app/simple-apk/app/src/main/AndroidManifest.xml:16:9-41
+22        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+22-->/app/simple-apk/app/src/main/AndroidManifest.xml:17:9-67
+23        <activity
+23-->/app/simple-apk/app/src/main/AndroidManifest.xml:19:9-28:20
+24            android:name="com.leemaz.mobile.MainActivity"
+24-->/app/simple-apk/app/src/main/AndroidManifest.xml:20:13-41
+25            android:configChanges="orientation|screenSize|keyboardHidden"
+25-->/app/simple-apk/app/src/main/AndroidManifest.xml:23:13-74
+26            android:exported="true"
+26-->/app/simple-apk/app/src/main/AndroidManifest.xml:21:13-36
+27            android:launchMode="singleTop" >
+27-->/app/simple-apk/app/src/main/AndroidManifest.xml:22:13-43
+28            <intent-filter>
+28-->/app/simple-apk/app/src/main/AndroidManifest.xml:24:13-27:29
+29                <action android:name="android.intent.action.MAIN" />
+29-->/app/simple-apk/app/src/main/AndroidManifest.xml:25:17-69
+29-->/app/simple-apk/app/src/main/AndroidManifest.xml:25:25-66
+30
+31                <category android:name="android.intent.category.LAUNCHER" />
+31-->/app/simple-apk/app/src/main/AndroidManifest.xml:26:17-77
+31-->/app/simple-apk/app/src/main/AndroidManifest.xml:26:27-74
+32            </intent-filter>
+33        </activity>
+34    </application>
+35
+36</manifest>
