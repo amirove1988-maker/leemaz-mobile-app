@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Leemaz",
+    "slug": "leemaz-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/leemaz-logo.png",
+    "userInterfaceStyle": "light",
+    "scheme": "leemaz",
+    "splash": {
+      "image": "./assets/images/leemaz-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E91E63"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leemaz.mobile"
+    },
+    "android": {
+      "package": "com.leemaz.mobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/leemaz-logo.png",
+        "backgroundColor": "#E91E63"
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/leemaz-logo.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
