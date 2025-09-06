@@ -598,6 +598,9 @@ class LeemazeCommerceAPITester:
         test_results.append(self.test_admin_functions())
         test_results.append(self.test_error_handling())
         
+        # PRIORITY TEST: Shop Logo Functionality
+        test_results.append(self.test_shop_logo_functionality())
+        
         # Summary
         passed = sum(test_results)
         total = len(test_results)
