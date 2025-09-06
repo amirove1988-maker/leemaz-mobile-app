@@ -111,21 +111,20 @@ class ShopCreate(BaseModel):
     category: str
 
 class Shop(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: str = Field(alias="_id")
     name: str
     description: str
     category: str
-    owner_id: PyObjectId
+    owner_id: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
     is_approved: bool = False  # New field for admin approval
     approved_at: Optional[datetime] = None
-    approved_by: Optional[PyObjectId] = None
+    approved_by: Optional[str] = None
 
     class Config:
-        validate_by_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class ProductCreate(BaseModel):
     name: str
