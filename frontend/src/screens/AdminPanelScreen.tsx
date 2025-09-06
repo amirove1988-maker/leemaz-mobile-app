@@ -425,7 +425,20 @@ export default function AdminPanelScreen() {
   const renderShop = ({ item }: { item: Shop }) => (
     <View style={styles.shopCard}>
       <View style={styles.shopHeader}>
-        <Text style={styles.shopName}>{item.name}</Text>
+        <View style={styles.shopHeaderLeft}>
+          {item.logo ? (
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${item.logo}` }}
+              style={styles.adminShopLogo}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.adminShopLogoPlaceholder}>
+              <Ionicons name="storefront" size={20} color="#E91E63" />
+            </View>
+          )}
+          <Text style={styles.shopName}>{item.name}</Text>
+        </View>
         <View style={[
           styles.statusBadge,
           { backgroundColor: item.is_approved ? '#E8F5E8' : '#FFF3E0' }
