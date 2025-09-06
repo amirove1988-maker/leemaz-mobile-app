@@ -585,20 +585,177 @@ async def get_credit_transactions(current_user: dict = Depends(get_current_user)
     transactions = await db.credit_transactions.find({"user_id": current_user["_id"]}).sort("created_at", -1).to_list(50)
     return transactions
 
-# Admin Routes (simplified)
-@api_router.get("/admin/users")
-async def get_all_users(current_user: dict = Depends(get_current_user)):
-    # Simple admin check - in production, use proper role-based access
-    if current_user["email"] != "admin@leemaz.com":
+# Helper function to check if user is admin
+async def check_admin_access(current_user: dict):
+    # Admin check: email ends with @admin.leemaz.com or specific admin email
+    admin_emails = ["admin@leemaz.com", "admin@admin.leemaz.com"]
+    if current_user["email"] not in admin_emails and not current_user["email"].endswith("@admin.leemaz.com"):
         raise HTTPException(status_code=403, detail="Admin access required")
+    return True
+
+# Admin Routes (Comprehensive Admin Panel)
+@api_router.get("/admin/dashboard")
+async def admin_dashboard(current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
     
-    users = await db.users.find().to_list(100)
-    return [User(**user) for user in users]
+    # Get dashboard statistics
+    total_users = await db.users.count_documents({})
+    total_buyers = await db.users.count_documents({"user_type": "buyer"})
+    total_sellers = await db.users.count_documents({"user_type": "seller"})
+    
+    total_shops = await db.shops.count_documents({})
+    pending_shops = await db.shops.count_documents({"is_approved": False, "is_active": True})
+    approved_shops = await db.shops.count_documents({"is_approved": True, "is_active": True})
+    
+    total_products = await db.products.count_documents({})
+    active_products = await db.products.count_documents({"is_active": True})
+    
+    total_reviews = await db.reviews.count_documents({})
+    
+    return {
+        "users": {
+            "total": total_users,
+            "buyers": total_buyers,
+            "sellers": total_sellers
+        },
+        "shops": {
+            "total": total_shops,
+            "pending": pending_shops,
+            "approved": approved_shops
+        },
+        "products": {
+            "total": total_products,
+            "active": active_products
+        },
+        "reviews": total_reviews
+    }
+
+@api_router.get("/admin/users")
+async def get_all_users(current_user: dict = Depends(get_current_user), skip: int = 0, limit: int = 50):
+    await check_admin_access(current_user)
+    
+    users = await db.users.find({}).skip(skip).limit(limit).sort("created_at", -1).to_list(limit)
+    
+    # Remove password field from response
+    for user in users:
+        user.pop("password", None)
+    
+    return users
+
+@api_router.get("/admin/shops")
+async def get_all_shops_admin(current_user: dict = Depends(get_current_user), status: str = "all"):
+    await check_admin_access(current_user)
+    
+    # Filter shops based on status
+    filter_dict = {}
+    if status == "pending":
+        filter_dict = {"is_approved": False, "is_active": True}
+    elif status == "approved":
+        filter_dict = {"is_approved": True, "is_active": True}
+    elif status == "rejected":
+        filter_dict = {"is_active": False}
+    
+    shops = await db.shops.find(filter_dict).sort("created_at", -1).to_list(100)
+    
+    # Add owner information to each shop
+    for shop in shops:
+        owner = await db.users.find_one({"_id": shop["owner_id"]})
+        if owner:
+            shop["owner_name"] = owner["full_name"]
+            shop["owner_email"] = owner["email"]
+    
+    return shops
+
+@api_router.post("/admin/shops/{shop_id}/approve")
+async def approve_shop(shop_id: str, current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    # Find the shop
+    shop = await db.shops.find_one({"_id": ObjectId(shop_id)})
+    if not shop:
+        raise HTTPException(status_code=404, detail="Shop not found")
+    
+    # Update shop approval status
+    await db.shops.update_one(
+        {"_id": ObjectId(shop_id)},
+        {
+            "$set": {
+                "is_approved": True,
+                "approved_at": datetime.utcnow(),
+                "approved_by": current_user["_id"],
+                "is_active": True
+            }
+        }
+    )
+    
+    return {"message": "Shop approved successfully"}
+
+@api_router.post("/admin/shops/{shop_id}/reject")
+async def reject_shop(shop_id: str, reason: str = "Not meeting quality standards", current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    # Find the shop
+    shop = await db.shops.find_one({"_id": ObjectId(shop_id)})
+    if not shop:
+        raise HTTPException(status_code=404, detail="Shop not found")
+    
+    # Update shop status to rejected
+    await db.shops.update_one(
+        {"_id": ObjectId(shop_id)},
+        {
+            "$set": {
+                "is_approved": False,
+                "is_active": False,
+                "rejected_at": datetime.utcnow(),
+                "rejected_by": current_user["_id"],
+                "rejection_reason": reason
+            }
+        }
+    )
+    
+    return {"message": "Shop rejected successfully"}
+
+@api_router.get("/admin/products")
+async def get_all_products_admin(current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    products = await db.products.find({}).sort("created_at", -1).limit(100).to_list(100)
+    
+    # Add seller and shop information
+    for product in products:
+        seller = await db.users.find_one({"_id": product["seller_id"]})
+        shop = await db.shops.find_one({"_id": product["shop_id"]})
+        
+        if seller:
+            product["seller_name"] = seller["full_name"]
+            product["seller_email"] = seller["email"]
+        
+        if shop:
+            product["shop_name"] = shop["name"]
+    
+    return products
+
+@api_router.post("/admin/users/{user_id}/toggle-status")
+async def toggle_user_status(user_id: str, current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
+    
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Toggle user active status
+    new_status = not user.get("is_active", True)
+    await db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"is_active": new_status}}
+    )
+    
+    action = "activated" if new_status else "deactivated"
+    return {"message": f"User {action} successfully"}
 
 @api_router.post("/admin/users/{user_id}/credits")
-async def add_credits_to_user(user_id: str, credits: int, current_user: dict = Depends(get_current_user)):
-    if current_user["email"] != "admin@leemaz.com":
-        raise HTTPException(status_code=403, detail="Admin access required")
+async def add_credits_to_user_admin(user_id: str, credits: int, current_user: dict = Depends(get_current_user)):
+    await check_admin_access(current_user)
     
     await db.users.update_one(
         {"_id": ObjectId(user_id)},
@@ -610,11 +767,13 @@ async def add_credits_to_user(user_id: str, credits: int, current_user: dict = D
         "user_id": ObjectId(user_id),
         "amount": credits,
         "type": "admin_add",
-        "description": "Credits added by admin",
+        "description": f"Credits {'added' if credits > 0 else 'deducted'} by admin",
+        "admin_id": current_user["_id"],
         "created_at": datetime.utcnow()
     })
     
-    return {"message": f"Added {credits} credits to user"}
+    action = "added" if credits > 0 else "deducted"
+    return {"message": f"{abs(credits)} credits {action} successfully"}
 
 # Health check
 @api_router.get("/health")
