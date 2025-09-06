@@ -14,6 +14,8 @@ import ProductDetailsScreen from '../screens/ProductDetailsScreen';
 import CreateProductScreen from '../screens/CreateProductScreen';
 import CreateShopScreen from '../screens/CreateShopScreen';
 import ChatConversationScreen from '../screens/ChatConversationScreen';
+import CreateOrderScreen from '../screens/CreateOrderScreen';
+import OrdersScreen from '../screens/OrdersScreen';
 
 export default function MainTabNavigator() {
   const { user } = useAuth();
