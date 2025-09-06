@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  rtlContainer: {
+    direction: 'rtl',
+  },
   screenContainer: {
     flex: 1,
   },
@@ -146,6 +149,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     height: 70,
   },
+  rtlTabBar: {
+    flexDirection: 'row-reverse',
+  },
   tabItem: {
     flex: 1,
     alignItems: 'center',
@@ -155,5 +161,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     fontWeight: '500',
+  },
+  rtlText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
 });
