@@ -147,6 +147,7 @@ const translations = {
     yes: 'نعم',
     no: 'لا',
     ok: 'موافق',
+    or: 'أو',
     
     // Profile
     logout: 'تسجيل الخروج',
