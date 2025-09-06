@@ -108,7 +108,28 @@ export default function AdminPanelScreen() {
     }
   };
 
-  const confirmShopAction = (shop: Shop, action: 'approve' | 'reject') => {
+  const handleUpdateSettings = async (newSettings: SystemSettings) => {
+    try {
+      await apiClient.post('/admin/settings', {
+        product_listing_cost: newSettings.product_listing_cost,
+        initial_user_credits: newSettings.initial_user_credits,
+        shop_approval_required: newSettings.shop_approval_required,
+        payment_method: newSettings.payment_method,
+        platform_commission: newSettings.platform_commission,
+      });
+      
+      setSettings(newSettings);
+      setEditingSettings(false);
+      
+      Alert.alert(
+        'Settings Updated!',
+        'System settings have been updated successfully.',
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error.response?.data?.detail || 'Failed to update settings');
+    }
+  };
     Alert.alert(
       `${action === 'approve' ? 'Approve' : 'Reject'} Shop`,
       `Are you sure you want to ${action} "${shop.name}" by ${shop.owner_name}?`,
