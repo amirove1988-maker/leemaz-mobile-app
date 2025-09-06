@@ -1,0 +1,7 @@
+com.leemaz.mobile.app-pngs-0 /app/simple-apk/app/build/generated/res/pngs/release
+com.leemaz.mobile.app-resValues-1 /app/simple-apk/app/build/generated/res/resValues/release
+com.leemaz.mobile.app-packageReleaseResources-2 /app/simple-apk/app/build/intermediates/incremental/release/packageReleaseResources/merged.dir
+com.leemaz.mobile.app-packageReleaseResources-3 /app/simple-apk/app/build/intermediates/incremental/release/packageReleaseResources/stripped.dir
+com.leemaz.mobile.app-merged_res-4 /app/simple-apk/app/build/intermediates/merged_res/release
+com.leemaz.mobile.app-main-5 /app/simple-apk/app/src/main/res
+com.leemaz.mobile.app-release-6 /app/simple-apk/app/src/release/res
