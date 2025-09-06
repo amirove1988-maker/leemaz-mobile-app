@@ -227,36 +227,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     return user
 
-def generate_verification_code():
-    return str(secrets.randbelow(999999)).zfill(6)
 
-async def send_verification_email(email: str, code: str):
-    """
-    Enhanced email verification system
-    For now, we'll log the verification code and store it in database
-    In production, you would integrate with a real email service like SendGrid, AWS SES, etc.
-    """
-    logger.info(f"=== EMAIL VERIFICATION ===")
-    logger.info(f"Email: {email}")
-    logger.info(f"Verification Code: {code}")
-    logger.info(f"========================")
-    
-    # Store verification code in database with longer expiry for testing
-    await db.verification_codes.insert_one({
-        "email": email,
-        "code": code,
-        "created_at": datetime.utcnow(),
-        "expires_at": datetime.utcnow() + timedelta(minutes=30)  # Extended to 30 minutes for testing
-    })
-    
-    # Also create a simple console output for easy testing
-    print("\n" + "="*50)
-    print(f"📧 VERIFICATION EMAIL FOR: {email}")
-    print(f"🔑 VERIFICATION CODE: {code}")
-    print(f"⏰ Valid for 30 minutes")
-    print("="*50 + "\n")
-    
-    return True
 
 # Authentication Routes
 @api_router.post("/auth/register", response_model=dict)
