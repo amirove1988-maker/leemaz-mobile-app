@@ -59,8 +59,8 @@ export default function RegisterScreen({ navigation }: any) {
       
       Alert.alert(
         'Registration Successful', 
-        'Please check your email for verification code',
-        [{ text: 'OK', onPress: () => navigation.navigate('EmailVerification', { email: formData.email }) }]
+        'Your account has been created! You can now sign in with 100 free credits.',
+        [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
       );
     } catch (error: any) {
       Alert.alert('Registration Failed', error.message);
