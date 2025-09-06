@@ -36,8 +36,34 @@ export default function CreateShopScreen({ navigation }: any) {
     name: '',
     description: '',
     category: 'Fashion',
+    logo: '', // base64 logo string
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const pickLogo = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Required', 'Please allow access to photos to add your shop logo');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1], // Square logo
+      quality: 0.8,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0].base64) {
+      setFormData({ ...formData, logo: result.assets[0].base64 });
+    }
+  };
+
+  const removeLogo = () => {
+    setFormData({ ...formData, logo: '' });
+  };
 
   const handleCreateShop = async () => {
     if (!formData.name.trim() || !formData.description.trim()) {
@@ -47,10 +73,15 @@ export default function CreateShopScreen({ navigation }: any) {
 
     setIsLoading(true);
     try {
-      await shopAPI.createShop(formData);
+      await shopAPI.createShop({
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        logo: formData.logo || null, // Send null if no logo
+      });
       Alert.alert(
         'Shop Created!',
-        'Your shop has been created successfully. You can now start adding products.',
+        'Your shop has been created successfully and is pending admin approval. You can add products once approved.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
     } catch (error: any) {
