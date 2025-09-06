@@ -82,12 +82,12 @@ export default function MainTabNavigator() {
   };
 
   const tabs = [
-    { name: 'Home', icon: 'home', label: 'Home' },
-    { name: 'Shop', icon: 'storefront', label: 'Shop' },
-    ...(user?.user_type === 'buyer' ? [{ name: 'Favorites', icon: 'heart', label: 'Favorites' }] : []),
-    { name: 'Orders', icon: 'receipt', label: 'Orders' },
-    { name: 'Chat', icon: 'chatbubbles', label: 'Chat' },
-    { name: 'Profile', icon: 'person', label: 'Profile' },
+    { name: 'Home', icon: 'home', label: t('home') },
+    { name: 'Shop', icon: 'storefront', label: t('shop') },
+    ...(user?.user_type === 'buyer' ? [{ name: 'Favorites', icon: 'heart', label: t('favorites') }] : []),
+    { name: 'Orders', icon: 'receipt', label: t('orders') },
+    { name: 'Chat', icon: 'chatbubbles', label: t('chat') },
+    { name: 'Profile', icon: 'person', label: t('profile') },
   ];
 
   // Don't show tab bar for certain screens
