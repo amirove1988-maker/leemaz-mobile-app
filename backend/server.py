@@ -160,6 +160,66 @@ class ChatMessage(BaseModel):
         populate_by_name = True
         arbitrary_types_allowed = True
 
+# System Settings Model
+class SystemSettings(BaseModel):
+    id: str = Field(alias="_id")
+    product_listing_cost: int = 50
+    initial_user_credits: int = 100
+    shop_approval_required: bool = True
+    payment_method: str = "cash"  # cash, online, both
+    platform_commission: float = 0.05  # 5% commission
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+# Notification Model
+class NotificationCreate(BaseModel):
+    user_id: str
+    title: str
+    message: str
+    type: str = "general"  # general, shop_approved, new_message, etc.
+
+class Notification(BaseModel):
+    id: str = Field(alias="_id")
+    user_id: str
+    title: str
+    message: str
+    type: str
+    is_read: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+# Order Model for Cash Payments
+class OrderCreate(BaseModel):
+    product_id: str
+    quantity: int = 1
+    delivery_address: str
+    phone_number: str
+    payment_method: str = "cash"  # cash on delivery
+
+class Order(BaseModel):
+    id: str = Field(alias="_id")
+    buyer_id: str
+    seller_id: str
+    product_id: str
+    quantity: int
+    total_amount: float
+    delivery_address: str
+    phone_number: str
+    payment_method: str
+    status: str = "pending"  # pending, confirmed, delivered, cancelled
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
 class ChatMessageCreate(BaseModel):
     receiver_id: str
     message: str
