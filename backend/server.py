@@ -86,8 +86,8 @@ class User(BaseModel):
     full_name: str
     user_type: str
     language: str
-    is_verified: bool = False
-    credits: int = 0
+    is_verified: bool = True  # Auto-verified now
+    credits: int = 100  # Start with 100 credits
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
     failed_login_attempts: int = 0
