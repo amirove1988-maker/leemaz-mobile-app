@@ -868,7 +868,71 @@ async def update_system_settings(
     
     return {"message": "System settings updated successfully"}
 
+# Device Token Model for Push Notifications
+class DeviceTokenCreate(BaseModel):
+    device_token: str
+    device_type: str = "ios"  # ios or android
+
+class DeviceToken(BaseModel):
+    id: str = Field(alias="_id")
+    user_id: str
+    device_token: str
+    device_type: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = True
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
+# Notification Preferences Model
+class NotificationPreferencesUpdate(BaseModel):
+    push_notifications: bool = True
+    email_notifications: bool = False
+    sms_notifications: bool = False
+    notification_types: List[str] = ["new_message", "shop_approved", "order_update"]
+
+class NotificationPreferences(BaseModel):
+    id: str = Field(alias="_id")
+    user_id: str
+    push_notifications: bool = True
+    email_notifications: bool = False
+    sms_notifications: bool = False
+    notification_types: List[str] = ["new_message", "shop_approved", "order_update"]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
 # Notification System
+@api_router.post("/notifications/register-token")
+async def register_device_token(token_data: DeviceTokenCreate, current_user: dict = Depends(get_current_user)):
+    # Check if token already exists for this user
+    existing_token = await db.device_tokens.find_one({
+        "user_id": str(current_user["_id"]),
+        "device_token": token_data.device_token
+    })
+    
+    if existing_token:
+        # Update existing token
+        await db.device_tokens.update_one(
+            {"_id": existing_token["_id"]},
+            {"$set": {"is_active": True, "updated_at": datetime.utcnow()}}
+        )
+        return {"message": "Device token updated successfully"}
+    
+    # Create new device token
+    token_dict = token_data.dict()
+    token_dict["user_id"] = str(current_user["_id"])
+    token_dict["created_at"] = datetime.utcnow()
+    token_dict["is_active"] = True
+    
+    result = await db.device_tokens.insert_one(token_dict)
+    
+    return {"message": "Device token registered successfully"}
+
 @api_router.post("/admin/notifications/send")
 async def send_notification(notification: NotificationCreate, current_user: dict = Depends(get_current_user)):
     await check_admin_access(current_user)
@@ -879,8 +943,15 @@ async def send_notification(notification: NotificationCreate, current_user: dict
     
     result = await db.notifications.insert_one(notification_dict)
     
+    # Get user's device tokens for push notifications
+    device_tokens = await db.device_tokens.find({
+        "user_id": notification.user_id,
+        "is_active": True
+    }).to_list(None)
+    
     # Here you would integrate with Expo Push Notifications
     # For now, we'll just store in database
+    # TODO: Send actual push notifications using Expo Push API
     
     return {"message": "Notification sent successfully"}
 
