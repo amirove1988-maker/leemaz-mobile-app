@@ -287,7 +287,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Shop Logo Upload/Display System"
+    - "Push Notifications System"  
+    - "Order Management Interface"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
