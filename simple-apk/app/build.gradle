@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 android {
     namespace 'com.leemaz.mobile'
     compileSdkVersion 34
-    buildToolsVersion "34.0.0"
     
     defaultConfig {
         applicationId "com.leemaz.mobile"
@@ -14,8 +13,18 @@ android {
     }
     
     buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
         release {
             minifyEnabled false
+            debuggable false
         }
+    }
+    
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
     }
 }
