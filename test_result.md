@@ -354,8 +354,7 @@ test_plan:
     - "Authentication System Frontend"
     - "Shop Logo Upload/Display System"
     - "Order Management Interface"
-  stuck_tasks:
-    - "Authentication System Frontend"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
