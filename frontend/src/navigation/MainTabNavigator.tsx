@@ -94,13 +94,13 @@ export default function MainTabNavigator() {
   const hideTabBar = !['Home', 'Shop', 'Favorites', 'Chat', 'Profile', 'Orders'].includes(currentScreen);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, isRTL && styles.rtlContainer]}>
       <View style={styles.screenContainer}>
         {renderScreen()}
       </View>
       
       {!hideTabBar && (
-        <View style={styles.tabBar}>
+        <View style={[styles.tabBar, isRTL && styles.rtlTabBar]}>
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab.name}
@@ -115,7 +115,8 @@ export default function MainTabNavigator() {
               <Text
                 style={[
                   styles.tabLabel,
-                  { color: activeTab === tab.name ? '#E91E63' : '#666' }
+                  { color: activeTab === tab.name ? '#E91E63' : '#666' },
+                  isRTL && styles.rtlText
                 ]}
               >
                 {tab.label}
