@@ -69,8 +69,7 @@
         "expo-notifications",
         {
           "icon": "./assets/images/leemaz-logo.png",
-          "color": "#E91E63",
-          "sounds": ["./assets/notification.wav"]
+          "color": "#E91E63"
         }
       ]
     ],
