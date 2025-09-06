@@ -381,19 +381,27 @@ async def create_product(product_data: ProductCreate, current_user: dict = Depen
     if current_user["user_type"] != "seller":
         raise HTTPException(status_code=403, detail="Only sellers can create products")
     
-    # Check if user has enough credits
-    if current_user["credits"] < 50:
-        raise HTTPException(status_code=400, detail="Insufficient credits. You need 50 credits to list a product.")
+    # Get system settings for product listing cost
+    settings = await db.system_settings.find_one()
+    listing_cost = settings["product_listing_cost"] if settings else 50
     
-    # Verify shop ownership
-    shop = await db.shops.find_one({"_id": ObjectId(product_data.shop_id), "owner_id": current_user["_id"]})
+    # Check if user has enough credits
+    if current_user["credits"] < listing_cost:
+        raise HTTPException(status_code=400, detail=f"Insufficient credits. You need {listing_cost} credits to list a product.")
+    
+    # Verify shop ownership and approval
+    shop = await db.shops.find_one({
+        "_id": ObjectId(product_data.shop_id), 
+        "owner_id": current_user["_id"],
+        "is_approved": True  # Only approved shops can add products
+    })
     if not shop:
-        raise HTTPException(status_code=404, detail="Shop not found or not owned by you")
+        raise HTTPException(status_code=404, detail="Approved shop not found or not owned by you")
     
     # Deduct credits
     await db.users.update_one(
         {"_id": current_user["_id"]},
-        {"$inc": {"credits": -50}}
+        {"$inc": {"credits": -listing_cost}}
     )
     
     product_dict = product_data.dict()
