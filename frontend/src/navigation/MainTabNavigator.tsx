@@ -83,6 +83,7 @@ export default function MainTabNavigator() {
     { name: 'Home', icon: 'home', label: 'Home' },
     { name: 'Shop', icon: 'storefront', label: 'Shop' },
     ...(user?.user_type === 'buyer' ? [{ name: 'Favorites', icon: 'heart', label: 'Favorites' }] : []),
+    { name: 'Orders', icon: 'receipt', label: 'Orders' },
     { name: 'Chat', icon: 'chatbubbles', label: 'Chat' },
     { name: 'Profile', icon: 'person', label: 'Profile' },
   ];
