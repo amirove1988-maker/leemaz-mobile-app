@@ -62,6 +62,8 @@ export default function AdminPanelScreen() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [shops, setShops] = useState<Shop[]>([]);
   const [selectedShopStatus, setSelectedShopStatus] = useState('pending');
+  const [settings, setSettings] = useState<SystemSettings | null>(null);
+  const [editingSettings, setEditingSettings] = useState(false);
 
   useEffect(() => {
     loadData();
