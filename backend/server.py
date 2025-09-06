@@ -386,6 +386,8 @@ async def get_shops(skip: int = 0, limit: int = 20):
     for shop in shops:
         shop["_id"] = str(shop["_id"])
         shop["owner_id"] = str(shop["owner_id"])
+        if shop.get("approved_by"):
+            shop["approved_by"] = str(shop["approved_by"])
     
     return [Shop(**shop) for shop in shops]
 
