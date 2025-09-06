@@ -65,6 +65,10 @@ export default function MainTabNavigator() {
         return <CreateShopScreen {...screenProps} />;
       case 'ChatConversation':
         return <ChatConversationScreen {...screenProps} />;
+      case 'CreateOrder':
+        return <CreateOrderScreen {...screenProps} />;
+      case 'Orders':
+        return <OrdersScreen {...screenProps} />;
       default:
         return <HomeScreen {...screenProps} />;
     }
