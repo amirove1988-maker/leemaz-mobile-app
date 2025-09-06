@@ -269,45 +269,18 @@ async def register(user_data: UserCreate):
     # Hash password
     hashed_password = get_password_hash(user_data.password)
     
-    # Create user
+    # Create user with auto-verification and 100 credits
     user_dict = user_data.dict()
     user_dict["password"] = hashed_password
     user_dict["created_at"] = datetime.utcnow()
-    user_dict["is_verified"] = False
-    user_dict["credits"] = 0
+    user_dict["is_verified"] = True  # Auto-verified
+    user_dict["credits"] = 100  # Start with 100 credits
     user_dict["is_active"] = True
     user_dict["failed_login_attempts"] = 0
     
     result = await db.users.insert_one(user_dict)
     
-    # Send verification email
-    verification_code = generate_verification_code()
-    await send_verification_email(user_data.email, verification_code)
-    
-    return {"message": "User registered successfully. Please check your email for verification code."}
-
-@api_router.post("/auth/verify-email")
-async def verify_email(verification: EmailVerification):
-    # Check verification code
-    code_doc = await db.verification_codes.find_one({
-        "email": verification.email,
-        "code": verification.code,
-        "expires_at": {"$gt": datetime.utcnow()}
-    })
-    
-    if not code_doc:
-        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
-    
-    # Update user as verified and add initial credits
-    await db.users.update_one(
-        {"email": verification.email},
-        {"$set": {"is_verified": True, "credits": 100}}
-    )
-    
-    # Delete verification code
-    await db.verification_codes.delete_one({"_id": code_doc["_id"]})
-    
-    return {"message": "Email verified successfully. You've received 100 free credits!"}
+    return {"message": "User registered successfully. You can now sign in!"}
 
 @api_router.post("/auth/login", response_model=Token)
 async def login(user_data: UserLogin):
@@ -332,9 +305,6 @@ async def login(user_data: UserLogin):
             }
         )
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    if not user.get("is_verified", False):
-        raise HTTPException(status_code=401, detail="Please verify your email first")
     
     # Reset failed login attempts on successful login
     await db.users.update_one(
