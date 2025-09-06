@@ -817,7 +817,7 @@ class LeemazeCommerceAPITester:
         test_results.append(self.test_push_notifications_system())
         
         # Summary
-        passed = sum(test_results)
+        passed = sum(1 for result in test_results if result is True)
         total = len(test_results)
         
         print("=" * 60)
