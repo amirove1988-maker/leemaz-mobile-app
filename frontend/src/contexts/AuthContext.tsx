@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.removeItem('authToken');
       
       // Clear token from api headers
-      delete api.defaults.headers.common['Authorization'];
+      delete apiClient.defaults.headers.common['Authorization'];
       
       // Clear user state
       setUser(null);
