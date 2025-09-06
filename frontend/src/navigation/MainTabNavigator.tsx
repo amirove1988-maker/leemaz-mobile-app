@@ -89,7 +89,7 @@ export default function MainTabNavigator() {
   ];
 
   // Don't show tab bar for certain screens
-  const hideTabBar = !['Home', 'Shop', 'Favorites', 'Chat', 'Profile'].includes(currentScreen);
+  const hideTabBar = !['Home', 'Shop', 'Favorites', 'Chat', 'Profile', 'Orders'].includes(currentScreen);
 
   return (
     <SafeAreaView style={styles.container}>
