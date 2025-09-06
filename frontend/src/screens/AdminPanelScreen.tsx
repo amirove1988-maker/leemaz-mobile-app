@@ -369,6 +369,7 @@ export default function AdminPanelScreen() {
           { key: 'shops', label: 'Shops', icon: 'storefront' },
           { key: 'users', label: 'Users', icon: 'people' },
           { key: 'products', label: 'Products', icon: 'bag' },
+          { key: 'settings', label: 'Settings', icon: 'settings' },
         ].map((tab) => (
           <TouchableOpacity
             key={tab.key}
