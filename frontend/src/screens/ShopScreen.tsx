@@ -400,6 +400,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
+    overflow: 'hidden',
+  },
+  shopLogo: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
   shopDetails: {
     flex: 1,
