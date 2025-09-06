@@ -172,17 +172,16 @@ class Review(BaseModel):
         arbitrary_types_allowed = True
 
 class ChatMessage(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    sender_id: PyObjectId
-    receiver_id: PyObjectId
+    id: str = Field(alias="_id")
+    sender_id: str
+    receiver_id: str
     message: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_read: bool = False
 
     class Config:
-        validate_by_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class ChatMessageCreate(BaseModel):
     receiver_id: str
