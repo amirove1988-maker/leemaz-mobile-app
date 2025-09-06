@@ -361,6 +361,199 @@ class LeemazeCommerceAPITester:
         self.log_test("Admin Functions Security", success, details)
         return success
     
+    def test_shop_logo_functionality(self):
+        """Test comprehensive shop logo upload and display functionality"""
+        print("\n" + "="*50)
+        print("SHOP LOGO FUNCTIONALITY TESTING")
+        print("="*50)
+        
+        # Test base64 image for logo testing
+        test_logo_base64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        
+        # Step 1: Login as admin to get token
+        admin_login = {
+            "email": "admin@leemaz.com",
+            "password": "admin123"
+        }
+        
+        response = self.make_request("POST", "/auth/login", admin_login)
+        if not response or response.status_code != 200:
+            self.log_test("Admin Login for Logo Testing", False, f"Failed to login as admin: {response.status_code if response else 'No response'}")
+            return False
+            
+        admin_token = response.json().get("access_token")
+        self.tokens['admin'] = admin_token
+        
+        # Step 2: Create a test seller account
+        seller_data = {
+            "email": "logo.seller@leemaz.com",
+            "password": "LogoTest123!",
+            "full_name": "Logo Test Seller",
+            "user_type": "seller",
+            "language": "en"
+        }
+        
+        response = self.make_request("POST", "/auth/register", seller_data)
+        seller_registered = response and response.status_code == 200
+        
+        if not seller_registered:
+            self.log_test("Seller Registration for Logo Testing", False, f"Failed to register seller: {response.status_code if response else 'No response'}")
+            return False
+            
+        # Step 3: Login as seller
+        seller_login = {
+            "email": "logo.seller@leemaz.com",
+            "password": "LogoTest123!"
+        }
+        
+        response = self.make_request("POST", "/auth/login", seller_login)
+        if not response or response.status_code != 200:
+            self.log_test("Seller Login for Logo Testing", False, f"Failed to login as seller: {response.status_code if response else 'No response'}")
+            return False
+            
+        seller_token = response.json().get("access_token")
+        self.tokens['seller'] = seller_token
+        
+        # Test 1: Create shop with logo
+        shop_with_logo = {
+            "name": "Logo Electronics Store",
+            "description": "Electronics store with a beautiful logo",
+            "category": "Electronics",
+            "logo": test_logo_base64
+        }
+        
+        response = self.make_request("POST", "/shops", shop_with_logo, token=seller_token)
+        shop_created_with_logo = response and response.status_code == 200
+        
+        shop_id = None
+        if shop_created_with_logo:
+            shop_data = response.json()
+            shop_id = shop_data.get("id")
+            logo_stored = shop_data.get("logo") == test_logo_base64
+            self.log_test("Shop Creation with Logo", shop_created_with_logo and logo_stored, 
+                         f"Shop created: {shop_created_with_logo}, Logo stored correctly: {logo_stored}")
+        else:
+            self.log_test("Shop Creation with Logo", False, 
+                         f"Failed to create shop with logo: {response.status_code if response else 'No response'}")
+        
+        # Test 2: Create shop without logo (should work fine)
+        seller2_data = {
+            "email": "nologoseller@leemaz.com",
+            "password": "NoLogo123!",
+            "full_name": "No Logo Seller",
+            "user_type": "seller",
+            "language": "en"
+        }
+        
+        response = self.make_request("POST", "/auth/register", seller2_data)
+        if response and response.status_code == 200:
+            seller2_login = {
+                "email": "nologoseller@leemaz.com",
+                "password": "NoLogo123!"
+            }
+            
+            response = self.make_request("POST", "/auth/login", seller2_login)
+            if response and response.status_code == 200:
+                seller2_token = response.json().get("access_token")
+                
+                shop_without_logo = {
+                    "name": "No Logo Store",
+                    "description": "Store without logo",
+                    "category": "Fashion"
+                }
+                
+                response = self.make_request("POST", "/shops", shop_without_logo, token=seller2_token)
+                shop_created_without_logo = response and response.status_code == 200
+                
+                if shop_created_without_logo:
+                    shop_data = response.json()
+                    logo_is_null = shop_data.get("logo") is None
+                    self.log_test("Shop Creation without Logo", shop_created_without_logo and logo_is_null,
+                                 f"Shop created: {shop_created_without_logo}, Logo is null: {logo_is_null}")
+                else:
+                    self.log_test("Shop Creation without Logo", False,
+                                 f"Failed to create shop without logo: {response.status_code if response else 'No response'}")
+        
+        # Test 3: Approve shops as admin (required for shops to be visible)
+        if shop_id and admin_token:
+            response = self.make_request("POST", f"/admin/shops/{shop_id}/approve", token=admin_token)
+            shop_approved = response and response.status_code == 200
+            self.log_test("Shop Approval by Admin", shop_approved,
+                         f"Shop approval: {shop_approved}")
+        
+        # Test 4: Retrieve shop and verify logo is included
+        if shop_id:
+            response = self.make_request("GET", "/shops/my", token=seller_token)
+            shop_retrieved = response and response.status_code == 200
+            
+            if shop_retrieved:
+                shop_data = response.json()
+                logo_retrieved = shop_data.get("logo") == test_logo_base64
+                self.log_test("Shop Retrieval with Logo", shop_retrieved and logo_retrieved,
+                             f"Shop retrieved: {shop_retrieved}, Logo matches: {logo_retrieved}")
+            else:
+                self.log_test("Shop Retrieval with Logo", False,
+                             f"Failed to retrieve shop: {response.status_code if response else 'No response'}")
+        
+        # Test 5: List all shops and verify logos are included
+        response = self.make_request("GET", "/shops")
+        shops_listed = response and response.status_code == 200
+        
+        if shops_listed:
+            shops_data = response.json()
+            logos_included = True
+            for shop in shops_data:
+                if 'logo' not in shop:
+                    logos_included = False
+                    break
+            
+            self.log_test("Shop Listing with Logos", shops_listed and logos_included,
+                         f"Shops listed: {shops_listed}, Logos field included: {logos_included}, Total shops: {len(shops_data)}")
+        else:
+            self.log_test("Shop Listing with Logos", False,
+                         f"Failed to list shops: {response.status_code if response else 'No response'}")
+        
+        # Test 6: Test invalid base64 logo (should handle gracefully)
+        invalid_logo_shop = {
+            "name": "Invalid Logo Store",
+            "description": "Store with invalid logo",
+            "category": "Books",
+            "logo": "invalid_base64_data"
+        }
+        
+        # Create another seller for this test
+        seller3_data = {
+            "email": "invalidlogo@leemaz.com",
+            "password": "Invalid123!",
+            "full_name": "Invalid Logo Seller",
+            "user_type": "seller",
+            "language": "en"
+        }
+        
+        response = self.make_request("POST", "/auth/register", seller3_data)
+        if response and response.status_code == 200:
+            seller3_login = {
+                "email": "invalidlogo@leemaz.com",
+                "password": "Invalid123!"
+            }
+            
+            response = self.make_request("POST", "/auth/login", seller3_login)
+            if response and response.status_code == 200:
+                seller3_token = response.json().get("access_token")
+                
+                response = self.make_request("POST", "/shops", invalid_logo_shop, token=seller3_token)
+                # Should either accept it (backend doesn't validate base64) or reject it gracefully
+                invalid_logo_handled = response and response.status_code in [200, 400, 422]
+                self.log_test("Invalid Logo Handling", invalid_logo_handled,
+                             f"Invalid logo handled gracefully: {response.status_code if response else 'No response'}")
+        
+        print("\n" + "="*50)
+        print("SHOP LOGO TESTING COMPLETED")
+        print("="*50)
+        
+        # Return overall success - all critical tests should pass
+        return (shop_created_with_logo and shop_retrieved and shops_listed)
+    
     def test_error_handling(self):
         """Test API error handling"""
         # Test invalid endpoint
