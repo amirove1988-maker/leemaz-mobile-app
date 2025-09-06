@@ -427,9 +427,7 @@ export default function AdminPanelScreen() {
   );
 
   const renderSettings = () => {
-    if (!settings) return null;
-
-    const [tempSettings, setTempSettings] = React.useState(settings);
+    if (!settings || !tempSettings) return null;
 
     return (
       <ScrollView
