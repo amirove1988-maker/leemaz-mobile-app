@@ -1,64 +1,144 @@
 <analysis>
-The trajectory details the conversion of a React + FastAPI + MongoDB web application, Leemaz, into a React Native/Expo mobile app. The AI engineer initiated the project by outlining a three-phase plan: Backend API Development, Mobile Frontend Development, and Mobile-Specific Features.
+The AI engineer successfully transformed the Leemaz e-commerce web application into an Expo mobile app. The initial phases involved extensive backend API development and mobile frontend creation, including crucial fixes for Pydantic v2 compatibility and navigation. Subsequent work included implementing an admin shop approval system, dynamic credit pricing, and shop logo functionality. After resolving a critical duplicate declaration error and a tunnel conflict, the app's core login functionality was fixed, and it was declared production-ready.
 
-Initially, the AI engineer focused on building the backend, implementing core e-commerce APIs (auth, shop, product, credit, review, chat, favorites, admin) and addressing Pydantic v2 compatibility issues. Concurrently, the frontend was developed, establishing a comprehensive UI and fixing navigation complexities by removing  in favor of a simpler Expo Router-compatible approach.
-
-Subsequent user requests led to significant modifications: the email verification system was removed and replaced with an admin shop approval workflow, complete with a dedicated admin panel and an admin user creation script. Login functionality was debugged and fixed by correctly configuring the API client and resolving remaining Pydantic  issues. Most recently, the AI engineer implemented a credit pricing control system accessible via the admin panel. The current task involves adding shop logo functionality, which is incomplete due to a duplicate declaration error causing a blank page.
+The work then shifted to delivering the app as an APK/AAB. The process was challenging due to environment-specific build issues (ARM64, Android SDK, EAS CLI authentication,  validation). The AI iteratively attempted various build strategies, including local Gradle builds and EAS cloud builds, continuously refining configurations and providing detailed instructions for the user to perform tasks locally. Despite multiple system reinitializations and build failures, an APK was successfully generated via EAS. However, the user reported that this APK failed to open on Android devices, leading to the current task: debugging and fixing the runtime issues to create a stable, working APK.
 </analysis>
 
 <product_requirements>
-The user requested to convert the existing Leemaz React + FastAPI + MongoDB e-commerce web application, a Syrian Women's Marketplace, into a native mobile app using React Native/Expo for Android and iOS. The app must maintain all existing functionality: user registration with email verification (later changed to admin approval), buyer/seller user types, shop creation, product listing with a credit system (50 credits/listing, 100 free upon verification, later configurable by admin), image uploads (base64), product reviews, real-time chat, favorites, push notifications, bilingual support (English/Arabic RTL), and an admin panel for user/credit management. Mobile-specific features include camera integration for photos, push notifications, mobile-optimized UI/UX, and navigation. Design requirements specify Leemaz branding with a butterfly logo, a luxury pink/purple theme, and mobile-responsive layouts. Backend infrastructure (FastAPI, MongoDB, JWT auth, email/file upload systems) must be preserved. Key changes implemented by the AI engineer include removing email verification in favor of an admin shop approval process, creating a comprehensive admin panel for shop and user management, implementing dynamic credit pricing control via the admin panel, and ensuring a cash-on-delivery payment system.
+The goal is to develop Leemaz, a native mobile e-commerce application for Syrian women entrepreneurs, mirroring an existing React + FastAPI + MongoDB web app. It needs to support Android and iOS with React Native/Expo. Core functionalities include user registration (initially email verification, later replaced by admin approval), buyer/seller roles, shop creation, product listings, a configurable credit system, base64 image uploads, product reviews, real-time chat, favorites, push notifications, and bilingual support (Arabic/English RTL). The app requires Leemaz branding (butterfly logo, luxury pink/purple theme), mobile-optimized UI/UX, and an admin panel for user/credit/shop management. The backend (FastAPI, MongoDB, JWT) must be preserved. Key implemented changes include removing email verification, adding an admin shop approval process, dynamic credit pricing control, and a cash-on-delivery payment system.
 </product_requirements>
 
 <key_technical_concepts>
--   **React Native/Expo**: Primary framework for mobile app development.
--   **Expo Router**: File-based routing for navigation.
--   **FastAPI**: Backend API development framework.
--   **MongoDB**: Database for persistent storage.
+-   **React Native/Expo**: Mobile app development framework.
+-   **Expo Router**: File-based navigation.
+-   **FastAPI**: Backend API development.
+-   **MongoDB**: Database.
 -   **JWT Authentication**: Secure user authentication.
--   **Zustand**: State management (intended for complex apps).
+-   **Zustand/Context API**: State management.
 -   **Axios**: HTTP client for API requests.
--   **Base64 Image Handling**: For product and shop logo uploads.
--   **Admin Approval Workflow**: For shops and credit management.
--   **Pydantic v2 Compatibility**: Resolution of model validation issues in FastAPI.
+-   **Base64 Image Handling**: For uploads.
+-   **Admin Approval Workflow**: For shops and credit.
+-   **Bilingual Support (RTL)**: Arabic/English language and layout.
+-   **EAS Build**: Expo Application Services for cloud builds (APK/AAB).
 </key_technical_concepts>
 
 <code_architecture>
-The project is a full-stack application with an Expo (React Native) frontend and a FastAPI (Python) backend using MongoDB.
-
 **Directory Structure:**
 
 
--   **/app/backend/server.py**: This is the main FastAPI application file. It contains all the API routes for authentication, user management, shop management, product CRUD, credit system, reviews, chat, favorites, and admin functionalities. It was extensively modified to remove email verification, add admin shop approval logic, implement dynamic credit pricing, and support shop logo uploads.
--   **/app/backend/models.py**: Defines the MongoDB data models using Pydantic. This file was frequently updated to ensure Pydantic v2 compatibility, especially for  handling, and to include new models like  for credit pricing and  for push notifications, and  to include .
--   **/app/backend/create_admin.py**: A utility script created to programmatically create the initial admin user in the MongoDB database, simplifying admin panel setup.
--   **/app/frontend/app/index.tsx**: The entry point for the Expo React Native application, using Expo Router for navigation. It was modified several times to refine navigation, integrate the main app structure, and fix styling issues. It now hosts the core navigation logic, including the admin panel routing.
--   **/app/frontend/app.json**: Expo configuration file. Modified to set the app icon (), app name (Leemaz), and slug (leemaz-mobile), and splash screen.
--   **/app/frontend/src/contexts/AuthContext.tsx**: Manages user authentication state and provides login/logout functionalities to the rest of the application. It interacts with the backend authentication APIs.
--   **/app/frontend/src/services/api.ts**: Configures the Axios HTTP client for making API requests to the FastAPI backend. It ensures JWT tokens are attached to authenticated requests and was fixed to correctly point to the backend API endpoint.
--   **/app/frontend/src/screens/LoginScreen.tsx**: The user login interface. It was updated to integrate the Leemaz logo prominently.
--   **/app/frontend/src/screens/RegisterScreen.tsx**: The user registration interface. It was updated to remove email verification steps and branding.
--   **/app/frontend/src/screens/AdminPanelScreen.tsx**: A central component for admin users, providing tabs for Dashboard, Shops, Users, Products, and Settings. It was significantly expanded to include shop approval, user credit management, and the newly added credit pricing control (Settings tab) and is being updated to show shop logos.
--   **/app/frontend/src/screens/CreateShopScreen.tsx**: Allows sellers to create new shops. It was updated to include functionality for uploading a shop logo in base64 format.
--   **/app/frontend/src/screens/ShopScreen.tsx**: Displays individual shop details. It was updated to show the uploaded shop logo.
--   **/app/frontend/assets/leemaz.png**: The Leemaz logo image, used for the app icon, splash screen, and prominently displayed on login/verification (previously) and admin screens.
+-   **/app/backend/server.py**: Main FastAPI application handling all API routes. Updated to remove email verification, add admin shop approval, credit pricing, and shop logo upload. Also updated with push notification device token registration and preferences endpoints.
+-   **/app/backend/models.py**: Defines MongoDB data models. Updated for Pydantic v2 compatibility,  for credit pricing, and  to include .
+-   **/app/frontend/app/index.tsx**: Entry point for the Expo app. Manages core navigation logic and app structure.
+-   **/app/frontend/src/contexts/AuthContext.tsx**: Manages user authentication. Modified to correctly use  from  for login and status checks, resolving a critical authentication bug.
+-   **/app/frontend/src/services/api.ts**: Configures Axios. Exports  for backend requests.
+-   **/app/frontend/src/screens/AdminPanelScreen.tsx**: Admin interface. Fixed a duplicate declaration error by removing redundant state/effect hooks. It displays shop logos and controls credit pricing.
+-   **/app/frontend/src/screens/CreateShopScreen.tsx**: For shop creation, updated to allow base64 shop logo uploads.
+-   **/app/frontend/src/screens/ShopScreen.tsx**: Displays shop details, updated to show the shop logo.
+-   **/app/frontend/src/screens/ProductDetailsScreen.tsx**: Modified to include Order Now and Contact Seller buttons for buyers.
+-   **/app/frontend/src/screens/CreateOrderScreen.tsx** and **/app/frontend/src/screens/OrderListScreen.tsx**: Newly created screens for order management functionality.
+-   **/app/frontend/src/navigation/MainTabNavigator.tsx**: Manages the main tab-based navigation. Updated to include Orders tab, support bilingual (Arabic/English) text, and RTL layouts.
+-   **/app/frontend/src/contexts/LanguageContext.tsx**, **/app/frontend/src/i18n/ar.json**, **/app/frontend/src/i18n/en.json**, **/app/frontend/src/i18n/i18n.ts**, **/app/frontend/src/i18n/translations.ts**: New files created to implement comprehensive bilingual (Arabic/English) support with RTL layout.
+-   **/app/frontend/app.json**: Expo configuration. Updated for app icon, splash screen, and Android build settings (, , ).
+-   **/app/frontend/eas.json**: EAS build configuration. Initially set  which was corrected to  for production builds. Also added .
+-   **/app/frontend/android/gradle.properties**: Modified to disable Hermes to resolve compilation issues during local APK builds.
+-   **/app/frontend/android/app/build.gradle**: Updated to set the explicit  attribute to resolve Gradle build errors.
 </code_architecture>
 
 <pending_tasks>
--   **Push Notifications (Frontend Integration)**: The backend system is ready, but Expo push notifications need frontend integration (device token registration, sending/receiving notifications).
--   **Order Management Interface (Frontend Screens)**: The backend has a cash-on-delivery system and order management, but dedicated frontend screens for buyers to create orders and sellers to manage incoming orders are pending.
--   **Fix Shop Logo Blank Page Error**: Resolve the duplicate declaration error causing the app to show a blank page when implementing shop logo functionality.
+-   **Push Notifications (Frontend Integration)**: Backend APIs are ready, but frontend integration (device token registration, sending/receiving) is pending.
+-   **Debug Android App Not Opening**: The recently built APK fails to open on Android devices after scanning and downloading, indicating a runtime bug.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was implementing the functionality to allow sellers to upload their shop logos. This involved modifying the backend ( and ) to store the logo in base64 format and updating several frontend screens:
--   : Added image picker functionality, a state variable for the logo, and a UI section for logo upload.
--   : Updated to display the shop logo if available.
--   : Modified to display shop logos in the admin's shop management section.
+Immediately before this summary, the AI engineer successfully generated an APK file for the Leemaz app using EAS Build in a GitHub Codespaces environment. However, the user reported that this APK, when scanned and downloaded to an Android device, was not opening and needed bug fixes.
 
-After these changes, the application displayed a blank page, and a screenshot () confirmed an error. The AI engineer identified a duplicate declaration error and created  to document the feature status before planning to fix the error.
+The AI is currently in the process of diagnosing and resolving this runtime issue. It has proposed a methodical debugging approach:
+1.  **Check Build Logs**: Reviewing the EAS build logs for warnings or errors specific to the last successful build.
+2.  **Minimal Working Version**: Creating an ultra-minimal version of , , and  to isolate the problem.
+    -   : Simplified to display only core text (Leemaz, subtitle, Arabic text, version, platform) with basic styling and  configuration.
+    -   : Stripped down to essential 
+  Usage: expo [command] [options]
+
+  Options:
+  
+    -V, --version                     output the version number
+    --non-interactive                 Fail, if an interactive prompt would be required to continue.
+    -h, --help                        output usage information
+  
+  Commands:
+
+    init [name]                       Create a new Expo project
+    start [path]                      Start a local dev server for the app
+    start:web [path]                  Start a Webpack dev server for the web app
+    export [path]                     Export the static files of the app for hosting it on a web server
+    install [packages...]             Install a module or other package to a project
+    run:android [path]                Run the Android app binary locally
+    run:ios [path]                    Run the iOS app binary locally
+    send [path]                       Share the project's URL to an email address
+
+    login                             Login to an Expo account
+    logout                            Logout of an Expo account
+    register                          Sign up for a new Expo account
+    whoami                            Return the currently authenticated account
+
+    client:install:ios                Install Expo Go for iOS on the simulator
+    client:install:android            Install Expo Go for Android on a connected device or emulator
+
+    config [path]                     Show the project config
+    doctor [path]                     Diagnose issues with the project
+    upgrade [sdk-version]             Upgrade the project packages and config for the given SDK version
+
+    customize:web [path]              Eject the default web files for customization
+    prebuild [path]                   Create native iOS and Android project files before building natively.
+                                      Learn more: https://docs.expo.dev/workflow/customizing/
+
+    build:web [path]                  Build the web app for production
+
+    credentials:manager [path]        Superseded by eas credentials in eas-cli
+
+    url [path]                        Log a URL for opening the project in Expo Go
+    url:ipa [path]                    Log the download URL for the standalone iOS binary
+    url:apk [path]                    Log the download URL for the standalone Android binary
+
+    webhooks [path]                   List all webhooks for a project
+    webhooks:add [path]               Add a webhook to a project
+    webhooks:remove [path]            Delete a webhook
+    webhooks:update [path]            Update an existing webhook
+
+    build:ios [path]                  Superseded by eas build in eas-cli
+    build:android [path]              Superseded by eas build in eas-cli
+    build:status [path]               Superseded by eas build:list in eas-cli
+    eject [path]                      Superseded by expo prebuild
+    fetch:ios:certs [path]            Superseded by eas credentials in eas-cli
+    fetch:android:keystore [path]     Superseded by eas credentials in eas-cli
+    fetch:android:hashes [path]       Superseded by eas credentials in eas-cli
+    fetch:android:upload-cert [path]  Superseded by eas credentials in eas-cli
+    publish [path]                    Superseded by eas update in eas-cli
+    publish:set [path]                Superseded by eas update:republish in eas-cli
+    publish:rollback [path]           Superseded by eas update:republish in eas-cli
+    publish:history [path]            Superseded by eas update:list in eas-cli
+    publish:details [path]            Superseded by eas update:view in eas-cli
+    push:android:upload [path]        Superseded by eas credentials in eas-cli
+    push:android:show [path]          Superseded by eas credentials in eas-cli
+    push:android:clear [path]         Superseded by eas credentials in eas-cli
+    upload:android [path]             Superseded by eas submit in eas-cli
+    upload:ios [path]                 Superseded by eas submit in eas-cli
+    client:ios [path]                 Superseded by Expo Dev Clients
+
+[19:17:45]   Run a command with --help for more info 💡
+[19:17:45]     $ expo start --help
+[19:17:45], ,  dependencies with specific versions.
+    -   : Minimal configuration for name, slug, version, splash background, and Android package/version code.
+3.  **Clean Install**: Removing , , and  then reinstalling dependencies and clearing the EAS build cache.
+4.  **Rebuild Minimal Version**: Attempting to build the simplified application again via An Expo user account is required to proceed.
+
+Log in to EAS with email or username (exit and run eas login --help to see other login options)
+Input is required, but stdin is not readable. Failed to display prompt: Email or username.
+
+This approach aims to establish a stable baseline that can open on Android, after which features can be progressively added back and retested to pinpoint the exact cause of the original crash.
 </current_work>
 
 <optional_next_step>
-Fix the duplicate declaration error in the frontend code that is causing the blank page to appear, which is related to the shop logo implementation.
+Execute the commands provided in Chat Message 525 to create a minimal working version of the app and rebuild it.
 </optional_next_step>
+
