@@ -83,6 +83,9 @@
       "eas": {
         "projectId": "leemaz-mobile-syrian-marketplace"
       }
+    },
+    "updates": {
+      "enabled": false
     }
   }
 }
