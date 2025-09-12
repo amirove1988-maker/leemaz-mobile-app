@@ -77,7 +77,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await authAPI.login(email, password);
+      const response = await Promise.race([
+        authAPI.login(email, password),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Login timeout')), 5000)
+        )
+      ]);
       const { access_token } = response.data;
       
       // Save token
@@ -85,7 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Get user info
       const userResponse = await authAPI.getMe();
-      setUser(userResponse.data);
+      const userData = userResponse.data;
+      setUser(userData);
+      
+      // Store user info locally for offline access
+      await AsyncStorage.setItem('userInfo', JSON.stringify(userData));
       
       return true;
     } catch (error) {
@@ -94,15 +103,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // For testing APK - allow offline login with demo credentials
       if (email === 'demo@leemaz.com' && password === 'demo123') {
         console.log('Using offline demo login');
-        await AsyncStorage.setItem('authToken', 'demo-token');
-        setUser({
+        const demoUser = {
           id: 'demo-user',
           email: 'demo@leemaz.com',
           full_name: 'Demo User',
           user_type: 'buyer',
           language: 'en',
           credits: 100
-        });
+        };
+        
+        await AsyncStorage.setItem('authToken', 'demo-token');
+        await AsyncStorage.setItem('userInfo', JSON.stringify(demoUser));
+        setUser(demoUser);
         return true;
       }
       
