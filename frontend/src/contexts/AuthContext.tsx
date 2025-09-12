@@ -75,6 +75,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return true;
     } catch (error) {
       console.error('Login failed:', error);
+      
+      // For testing APK - allow offline login with demo credentials
+      if (email === 'demo@leemaz.com' && password === 'demo123') {
+        console.log('Using offline demo login');
+        await AsyncStorage.setItem('authToken', 'demo-token');
+        setUser({
+          id: 'demo-user',
+          email: 'demo@leemaz.com',
+          full_name: 'Demo User',
+          user_type: 'buyer',
+          language: 'en',
+          credits: 100
+        });
+        return true;
+      }
+      
       return false;
     }
   };
