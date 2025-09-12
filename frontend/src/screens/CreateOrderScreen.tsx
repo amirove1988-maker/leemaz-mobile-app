@@ -56,7 +56,7 @@ const CreateOrderScreen = ({ route, navigation }) => {
         payment_method: 'cash'
       };
 
-      const response = await api.post('/orders', orderData);
+      const response = await ordersAPI.createOrder(orderData);
 
       Alert.alert(
         'Order Created!',
