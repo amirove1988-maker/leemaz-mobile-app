@@ -116,3 +116,14 @@ export const creditsAPI = {
   getTransactions: () =>
     apiClient.get('/credits/transactions'),
 };
+
+export const ordersAPI = {
+  createOrder: (orderData: any) =>
+    apiClient.post('/orders', orderData),
+  
+  getOrders: () =>
+    apiClient.get('/orders'),
+  
+  updateOrderStatus: (orderId: string, status: string) =>
+    apiClient.post(`/orders/${orderId}/status`, { status }),
+};
