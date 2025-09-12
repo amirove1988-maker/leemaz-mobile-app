@@ -33,28 +33,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (token) {
-        // For APK testing, skip backend call initially
+        // For APK testing, skip backend call initially with timeout
         try {
-          // Get user info using authAPI
-          const response = await authAPI.getMe();
+          // Get user info using authAPI with timeout
+          const response = await Promise.race([
+            authAPI.getMe(),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Network timeout')), 3000)
+            )
+          ]);
           setUser(response.data);
         } catch (error) {
-          console.log('Backend not accessible, using offline mode');
-          // Set a dummy user for APK testing
-          setUser({
-            id: 'offline-user',
-            email: 'offline@leemaz.com',
-            full_name: 'Offline User',
-            user_type: 'buyer',
-            language: 'en',
-            credits: 100
-          });
+          console.log('Backend not accessible, using offline mode. Error:', error.message);
+          
+          // Try to get stored user info
+          const storedUser = await AsyncStorage.getItem('userInfo');
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          } else {
+            // Set a dummy user for APK testing
+            const offlineUser = {
+              id: 'offline-user',
+              email: 'offline@leemaz.com',
+              full_name: 'Offline User',
+              user_type: 'buyer',
+              language: 'en',
+              credits: 100
+            };
+            setUser(offlineUser);
+            await AsyncStorage.setItem('userInfo', JSON.stringify(offlineUser));
+          }
         }
       }
     } catch (error) {
       console.error('Auth check failed:', error);
       // Clear invalid token
       await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('userInfo');
     } finally {
       setIsLoading(false);
     }
