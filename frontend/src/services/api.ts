@@ -5,11 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // For development, use the env variable. For production/standalone builds, use a fallback
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL 
   ? process.env.EXPO_PUBLIC_BACKEND_URL + '/api'
-  : 'https://api.leemaz.com/api'; // Fallback for production (you'll need to update this)
+  : 'https://leemaz-api.herokuapp.com/api'; // Update this to your actual production API URL
 
+// Add timeout for better mobile experience
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 5000, // Reduced from 15000 for faster failures
   headers: {
     'Content-Type': 'application/json',
   },
