@@ -2,7 +2,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Use the proxy URL which redirects /api/* to backend on port 8001
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/api';
+// For development, use the env variable. For production/standalone builds, use a fallback
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL 
+  ? process.env.EXPO_PUBLIC_BACKEND_URL + '/api'
+  : 'https://api.leemaz.com/api'; // Fallback for production (you'll need to update this)
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
