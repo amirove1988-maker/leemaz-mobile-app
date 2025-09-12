@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Leemaz Minimal",
+    "slug": "leemaz-minimal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#E91E63"
+    },
+    "android": {
+      "package": "com.leemaz.minimal",
+      "versionCode": 1
+    }
+  }
+}
