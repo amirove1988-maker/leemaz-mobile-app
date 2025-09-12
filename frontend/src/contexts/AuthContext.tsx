@@ -136,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Clear token from storage
       await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('userInfo');
       
       // Clear token from api headers
       delete apiClient.defaults.headers.common['Authorization'];
