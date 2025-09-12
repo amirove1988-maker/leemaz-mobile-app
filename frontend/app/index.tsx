@@ -6,10 +6,27 @@ import LoginScreen from '../src/screens/LoginScreen';
 import RegisterScreen from '../src/screens/RegisterScreen';
 import MainTabNavigator from '../src/navigation/MainTabNavigator';
 import AdminPanelScreen from '../src/screens/AdminPanelScreen';
+import { notificationService } from '../src/services/notifications';
 
 function AppContent() {
   const { user, isLoading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState('Login');
+
+  useEffect(() => {
+    // Initialize notifications when app starts
+    const initializeNotifications = async () => {
+      try {
+        const token = await notificationService.registerDeviceToken();
+        if (token) {
+          console.log('Push notifications initialized successfully');
+        }
+      } catch (error) {
+        console.log('Push notifications initialization failed (offline mode):', error);
+      }
+    };
+
+    initializeNotifications();
+  }, []);
 
   if (isLoading) {
     return (
