@@ -42,7 +42,7 @@ const OrdersScreen = ({ navigation }) => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await api.post(`/orders/${orderId}/status`, { status: newStatus });
+      await apiClient.post(`/orders/${orderId}/status`, { status: newStatus });
       Alert.alert('Success', `Order status updated to ${newStatus}`);
       fetchOrders(); // Refresh the list
     } catch (error) {
