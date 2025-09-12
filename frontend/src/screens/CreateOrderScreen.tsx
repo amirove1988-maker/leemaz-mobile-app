@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { ordersAPI } from '../services/api';
 
 const CreateOrderScreen = ({ route, navigation }) => {
   const { product } = route.params;
