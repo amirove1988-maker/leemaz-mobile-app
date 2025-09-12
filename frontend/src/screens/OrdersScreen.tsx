@@ -20,7 +20,7 @@ const OrdersScreen = ({ navigation }) => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const response = await apiClient.get('/orders');
+      const response = await ordersAPI.getOrders();
       setOrders(response.data);
     } catch (error) {
       console.error('Fetch orders error:', error);
