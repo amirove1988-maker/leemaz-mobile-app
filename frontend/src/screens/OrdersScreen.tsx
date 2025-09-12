@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
-import { apiClient } from '../services/api';
+import { ordersAPI } from '../services/api';
 
 const OrdersScreen = ({ navigation }) => {
   const { user } = useAuth();
