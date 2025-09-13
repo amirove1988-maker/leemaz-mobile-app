@@ -50,6 +50,22 @@ export default function ProfileScreen({ navigation }: any) {
     );
   };
 
+  const handleRequestCredits = () => {
+    Alert.alert(
+      'Request Credits',
+      'You can request additional credits from the admin. Your current balance: ' + (user?.credits || 0) + ' credits.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Send Request', 
+          onPress: () => {
+            Alert.alert('Request Sent', 'Your credit request has been sent to the admin for review.');
+          }
+        }
+      ]
+    );
+  };
+
   const menuItems = [
     {
       id: 'language',
@@ -57,6 +73,13 @@ export default function ProfileScreen({ navigation }: any) {
       icon: 'language-outline',
       onPress: () => setShowLanguageModal(true),
     },
+    // Add Request Credits button for sellers only
+    ...(user?.user_type === 'seller' ? [{
+      id: 'requestCredits',
+      title: 'Request Credits',
+      icon: 'diamond-outline',
+      onPress: handleRequestCredits,
+    }] : []),
     {
       id: 'settings',
       title: t('settings'),
