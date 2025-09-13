@@ -676,9 +676,10 @@ async def get_all_users(current_user: dict = Depends(get_current_user), skip: in
     
     users = await db.users.find({}).skip(skip).limit(limit).sort("created_at", -1).to_list(limit)
     
-    # Remove password field from response
+    # Remove password field and convert ObjectId to string
     for user in users:
         user.pop("password", None)
+        user["_id"] = str(user["_id"])
     
     return users
 
