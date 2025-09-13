@@ -716,6 +716,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  logoContainer: {
+    width: 40,
+    height: 40,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoEmoji: {
+    fontSize: 24,
+  },
   logo: {
     width: 40,
     height: 40,
