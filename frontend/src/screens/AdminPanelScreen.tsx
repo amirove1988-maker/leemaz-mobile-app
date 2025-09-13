@@ -627,9 +627,11 @@ export default function AdminPanelScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoEmoji}>🦋</Text>
-          </View>
+          <Image
+            source={require('../../assets/images/leemaz-butterfly-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <View>
             <Text style={styles.headerTitle}>Admin Panel</Text>
             <Text style={styles.headerSubtitle}>Leemaz Management</Text>
