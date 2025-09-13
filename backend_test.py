@@ -1220,6 +1220,12 @@ class LeemazeCommerceAPITester:
                      f"Transaction history accessible: {transactions_work}")
         
         # Test 4: Admin credit management
+        admin_token = None
+        admin_login = {"email": "admin@leemaz.com", "password": "admin123"}
+        admin_response = self.make_request("POST", "/auth/login", admin_login)
+        if admin_response and admin_response.status_code == 200:
+            admin_token = admin_response.json().get("access_token")
+        
         if admin_token:
             # Get user ID for credit management
             seller_me_response = self.make_request("GET", "/auth/me", token=seller_token)
