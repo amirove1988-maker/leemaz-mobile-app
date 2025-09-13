@@ -350,4 +350,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
   },
+  viewProductButton: {
+    backgroundColor: '#E91E63',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginTop: 8,
+    alignItems: 'center',
+  },
+  viewProductButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  sellerInfo: {
+    backgroundColor: '#FFF3E0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  sellerInfoText: {
+    fontSize: 10,
+    color: '#FF9800',
+    textAlign: 'center',
+  },
 });
