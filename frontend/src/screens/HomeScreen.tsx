@@ -102,6 +102,18 @@ export default function HomeScreen({ navigation }: any) {
           </View>
           <Text style={styles.category}>{item.category}</Text>
         </View>
+
+        {/* Show different actions based on user type */}
+        {user?.user_type === 'buyer' && (
+          <TouchableOpacity style={styles.viewProductButton}>
+            <Text style={styles.viewProductButtonText}>View Details</Text>
+          </TouchableOpacity>
+        )}
+        {user?.user_type === 'seller' && (
+          <View style={styles.sellerInfo}>
+            <Text style={styles.sellerInfoText}>As a seller, you can view but not purchase</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
