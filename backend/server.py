@@ -767,10 +767,14 @@ async def get_all_products_admin(current_user: dict = Depends(get_current_user))
     
     products = await db.products.find({}).sort("created_at", -1).limit(100).to_list(100)
     
-    # Add seller and shop information
+    # Add seller and shop information and convert ObjectIds
     for product in products:
-        seller = await db.users.find_one({"_id": product["seller_id"]})
-        shop = await db.shops.find_one({"_id": product["shop_id"]})
+        product["_id"] = str(product["_id"])
+        product["seller_id"] = str(product["seller_id"])
+        product["shop_id"] = str(product["shop_id"])
+        
+        seller = await db.users.find_one({"_id": ObjectId(product["seller_id"])})
+        shop = await db.shops.find_one({"_id": ObjectId(product["shop_id"])})
         
         if seller:
             product["seller_name"] = seller["full_name"]
