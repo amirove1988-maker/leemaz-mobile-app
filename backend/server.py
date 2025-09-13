@@ -698,9 +698,14 @@ async def get_all_shops_admin(current_user: dict = Depends(get_current_user), st
     
     shops = await db.shops.find(filter_dict).sort("created_at", -1).to_list(100)
     
-    # Add owner information to each shop
+    # Add owner information to each shop and convert ObjectIds
     for shop in shops:
-        owner = await db.users.find_one({"_id": shop["owner_id"]})
+        shop["_id"] = str(shop["_id"])
+        shop["owner_id"] = str(shop["owner_id"])
+        if shop.get("approved_by"):
+            shop["approved_by"] = str(shop["approved_by"])
+        
+        owner = await db.users.find_one({"_id": ObjectId(shop["owner_id"])})
         if owner:
             shop["owner_name"] = owner["full_name"]
             shop["owner_email"] = owner["email"]
