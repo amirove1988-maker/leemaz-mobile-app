@@ -682,18 +682,8 @@ export default function AdminPanelScreen() {
         {currentView === 'dashboard' && renderDashboard()}
         {currentView === 'shops' && renderShops()}
         {currentView === 'settings' && renderSettings()}
-        {currentView === 'users' && (
-          <View style={styles.comingSoon}>
-            <Ionicons name="people-outline" size={64} color="#ccc" />
-            <Text style={styles.comingSoonText}>{renderUserManagement()}</Text>
-          </View>
-        )}
-        {currentView === 'products' && (
-          <View style={styles.comingSoon}>
-            <Ionicons name="bag-outline" size={64} color="#ccc" />
-            <Text style={styles.comingSoonText}>{renderProductManagement()}</Text>
-          </View>
-        )}
+        {currentView === 'users' && renderUserManagement()}
+        {currentView === 'products' && renderProductManagement()}
       </View>
     </SafeAreaView>
   );
