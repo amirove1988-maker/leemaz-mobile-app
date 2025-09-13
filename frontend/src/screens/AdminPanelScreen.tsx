@@ -593,13 +593,13 @@ export default function AdminPanelScreen() {
         {currentView === 'users' && (
           <View style={styles.comingSoon}>
             <Ionicons name="people-outline" size={64} color="#ccc" />
-            <Text style={styles.comingSoonText}>User Management Coming Soon</Text>
+            <Text style={styles.comingSoonText}>{renderUserManagement()}</Text>
           </View>
         )}
         {currentView === 'products' && (
           <View style={styles.comingSoon}>
             <Ionicons name="bag-outline" size={64} color="#ccc" />
-            <Text style={styles.comingSoonText}>Product Management Coming Soon</Text>
+            <Text style={styles.comingSoonText}>{renderProductManagement()}</Text>
           </View>
         )}
       </View>
