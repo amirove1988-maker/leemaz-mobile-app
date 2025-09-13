@@ -519,6 +519,98 @@ export default function AdminPanelScreen() {
     </View>
   );
 
+  const renderUserManagement = () => (
+    <ScrollView
+      contentContainerStyle={styles.managementContainer}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} />}
+    >
+      <View style={styles.managementCard}>
+        <Text style={styles.managementTitle}>👥 User Management</Text>
+        
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('User Management', 'Feature: View all users, manage user roles, suspend accounts, and handle user verification.');
+          }}
+        >
+          <Ionicons name="people" size={20} color="#1976D2" />
+          <Text style={styles.managementActionText}>View All Users</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('Credit Management', 'Feature: Add/remove credits from user accounts, view credit transaction history.');
+          }}
+        >
+          <Ionicons name="diamond" size={20} color="#FFB000" />
+          <Text style={styles.managementActionText}>Manage User Credits</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('User Reports', 'Feature: View user activity reports, registration trends, and engagement metrics.');
+          }}
+        >
+          <Ionicons name="analytics" size={20} color="#4CAF50" />
+          <Text style={styles.managementActionText}>User Reports</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+
+  const renderProductManagement = () => (
+    <ScrollView
+      contentContainerStyle={styles.managementContainer}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} />}
+    >
+      <View style={styles.managementCard}>
+        <Text style={styles.managementTitle}>📦 Product Management</Text>
+        
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('All Products', 'Feature: View all products across all shops, moderate content, and manage listings.');
+          }}
+        >
+          <Ionicons name="bag" size={20} color="#E91E63" />
+          <Text style={styles.managementActionText}>View All Products</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('Product Categories', 'Feature: Manage product categories, create new categories, and organize listings.');
+          }}
+        >
+          <Ionicons name="pricetags" size={20} color="#FF9800" />
+          <Text style={styles.managementActionText}>Manage Categories</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('Product Reports', 'Feature: View product performance, popular items, and sales analytics.');
+          }}
+        >
+          <Ionicons name="trending-up" size={20} color="#4CAF50" />
+          <Text style={styles.managementActionText}>Product Analytics</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.managementAction}
+          onPress={() => {
+            Alert.alert('Content Moderation', 'Feature: Review flagged products, approve content, and manage disputes.');
+          }}
+        >
+          <Ionicons name="shield-checkmark" size={20} color="#9C27B0" />
+          <Text style={styles.managementActionText}>Content Moderation</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
