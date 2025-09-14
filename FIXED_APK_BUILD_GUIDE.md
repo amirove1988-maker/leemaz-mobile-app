@@ -12,7 +12,7 @@
 ## 🔧 **WHAT WAS FIXED:**
 
 ### **Root Cause Identified:**
-- APK was crashing because it tried to connect to development URLs (`https://syrian-artisan.preview.emergentagent.com`) that are not accessible on external Android devices
+- APK was crashing because it tried to connect to development URLs (`https://leemaz-expo-app.preview.emergentagent.com`) that are not accessible on external Android devices
 
 ### **Comprehensive Fixes Applied:**
 
