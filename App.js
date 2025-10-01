@@ -345,7 +345,10 @@ const translations = {
     helpCenter: 'مركز المساعدة',
     contactSupport: 'اتصل بالدعم',
     reportIssue: 'إبلاغ عن مشكلة',
-    faqs: 'الأسئلة الشائعة'
+    faqs: 'الأسئلة الشائعة',
+    productName: 'اسم المنتج',
+    selectImage: 'اختيار صورة',
+    imageSelected: 'تم اختيار الصورة ✓'
   }
 };
 
