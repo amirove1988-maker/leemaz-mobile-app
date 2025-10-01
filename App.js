@@ -445,7 +445,9 @@ export default function App() {
   const renderHeader = () => (
     <View style={[styles.header, currentLanguage === 'ar' && styles.rtlContainer]}>
       <View style={styles.headerContent}>
-        <Text style={styles.logo}>🦋</Text>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoImage}>🦋</Text>
+        </View>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>Leemaz</Text>
           <Text style={styles.headerSubtitle}>{t('subtitle')}</Text>
