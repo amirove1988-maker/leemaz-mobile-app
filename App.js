@@ -450,7 +450,11 @@ export default function App() {
     <View style={[styles.header, currentLanguage === 'ar' && styles.rtlContainer]}>
       <View style={styles.headerContent}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoImage}>🦋</Text>
+          <Image 
+            source={{ uri: LEEMAZ_LOGO_BASE64 }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
         </View>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>Leemaz</Text>
