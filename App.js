@@ -1894,6 +1894,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  adminTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  adminLogoImage: {
+    width: 28,
+    height: 28,
+    marginRight: 10,
+  },
+  adminTitle: {
+    marginBottom: 0,
+  },
   favoritesContent: {
     padding: 20,
   },
