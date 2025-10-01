@@ -553,23 +553,505 @@ export default function App() {
     </SafeAreaView>
   );
 
-  // Continue with other render methods...
-  // [Note: Due to length constraints, I'm showing the structure. The full file would include all render methods]
+  const renderRegisterScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.formContainer, currentLanguage === 'ar' && styles.rtlContainer]}>
+          <Text style={[styles.welcomeText, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('createAccount')}
+          </Text>
+          
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('fullName')}
+              value={registerForm.fullName}
+              onChangeText={(text) => setRegisterForm({...registerForm, fullName: text})}
+            />
+            <TextInput
+              style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('email')}
+              value={registerForm.email}
+              onChangeText={(text) => setRegisterForm({...registerForm, email: text})}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('password')}
+              value={registerForm.password}
+              onChangeText={(text) => setRegisterForm({...registerForm, password: text})}
+              secureTextEntry
+            />
+            <TextInput
+              style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('confirmPassword')}
+              value={registerForm.confirmPassword}
+              onChangeText={(text) => setRegisterForm({...registerForm, confirmPassword: text})}
+              secureTextEntry
+            />
+          </View>
+          
+          <TouchableOpacity style={styles.primaryButton} onPress={handleRegister}>
+            <Text style={styles.primaryButtonText}>{t('register')}</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.linkContainer}>
+            <Text style={[styles.linkText, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('alreadyHaveAccount')}
+            </Text>
+            <TouchableOpacity onPress={() => setCurrentScreen('Login')}>
+              <Text style={styles.linkButton}> {t('login')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+
+  const renderHomeScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.homeContent}>
+          <Text style={[styles.welcomeText, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('welcome')} {currentUser?.name}!
+          </Text>
+          <Text style={[styles.subtitleText, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('discover')}
+          </Text>
+          
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={[styles.searchInput, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('searchPlaceholder')}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+          
+          <View style={styles.categoriesContainer}>
+            <Text style={[styles.sectionTitle, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('categories')}
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {['all', 'clothing', 'jewelry', 'handicrafts'].map(category => (
+                <TouchableOpacity
+                  key={category}
+                  style={[
+                    styles.categoryButton,
+                    selectedCategory === category && styles.activeCategoryButton
+                  ]}
+                  onPress={() => setSelectedCategory(category)}
+                >
+                  <Text style={[
+                    styles.categoryButtonText,
+                    selectedCategory === category && styles.activeCategoryButtonText,
+                    currentLanguage === 'ar' && styles.rtlText
+                  ]}>
+                    {t(category)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          
+          <View style={styles.productsContainer}>
+            <Text style={[styles.sectionTitle, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('products')}
+            </Text>
+            {getFilteredProducts().length === 0 ? (
+              <Text style={[styles.emptyText, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('noProductsFound')}
+              </Text>
+            ) : (
+              getFilteredProducts().map(product => (
+                <View key={product.id} style={styles.productCard}>
+                  <View style={styles.productInfo}>
+                    <Text style={[styles.productName, currentLanguage === 'ar' && styles.rtlText]}>
+                      {product.name}
+                    </Text>
+                    <Text style={[styles.productDescription, currentLanguage === 'ar' && styles.rtlText]}>
+                      {product.description}
+                    </Text>
+                    <Text style={styles.productPrice}>${product.price}</Text>
+                    <Text style={[styles.productShop, currentLanguage === 'ar' && styles.rtlText]}>
+                      {product.shopName}
+                    </Text>
+                  </View>
+                  <View style={styles.productActions}>
+                    {currentUser.role === 'buyer' && (
+                      <>
+                        <TouchableOpacity
+                          style={styles.secondaryButton}
+                          onPress={() => addToFavorites(product)}
+                        >
+                          <Text style={styles.secondaryButtonText}>❤️</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.primaryButton}
+                          onPress={() => buyProduct(product)}
+                        >
+                          <Text style={styles.primaryButtonText}>{t('buyNow')}</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
+                    {currentUser.role === 'seller' && (
+                      <TouchableOpacity style={styles.secondaryButton}>
+                        <Text style={styles.secondaryButtonText}>{t('viewDetails')}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              ))
+            )}
+          </View>
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderProfileScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.profileContent}>
+          <View style={styles.profileHeader}>
+            <Text style={styles.profileIcon}>👤</Text>
+            <Text style={[styles.profileName, currentLanguage === 'ar' && styles.rtlText]}>
+              {currentUser?.name}
+            </Text>
+            <Text style={[styles.profileEmail, currentLanguage === 'ar' && styles.rtlText]}>
+              {currentUser?.email}
+            </Text>
+            <Text style={[styles.profileRole, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('roleBasedMessage')}: {t(currentUser?.role)}
+            </Text>
+            <Text style={[styles.profileCredits, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('credits')}: {currentUser?.credits}
+            </Text>
+          </View>
+          
+          <View style={styles.profileActions}>
+            {currentUser?.role === 'seller' && (
+              <TouchableOpacity style={styles.actionButton} onPress={requestCredits}>
+                <Text style={styles.actionButtonText}>{t('requestCredits')}</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setShowLanguageModal(true)}
+            >
+              <Text style={styles.actionButtonText}>{t('changeLanguage')}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionButton} onPress={handleLogout}>
+              <Text style={styles.actionButtonText}>{t('logout')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderFavoritesScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.favoritesContent}>
+          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('favorites')}
+          </Text>
+          {favorites.length === 0 ? (
+            <Text style={[styles.emptyText, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('noFavorites')}
+            </Text>
+          ) : (
+            favorites.map(product => (
+              <View key={product.id} style={styles.favoriteItem}>
+                <Text style={[styles.favoriteItemName, currentLanguage === 'ar' && styles.rtlText]}>
+                  {product.name}
+                </Text>
+                <Text style={styles.favoriteItemPrice}>${product.price}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderOrdersScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.ordersContent}>
+          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('orders')}
+          </Text>
+          {orders.length === 0 ? (
+            <Text style={[styles.emptyText, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('noOrders')}
+            </Text>
+          ) : (
+            orders.map(order => (
+              <View key={order.id} style={styles.orderItem}>
+                <Text style={[styles.orderItemName, currentLanguage === 'ar' && styles.rtlText]}>
+                  {order.product.name}
+                </Text>
+                <Text style={[styles.orderItemDate, currentLanguage === 'ar' && styles.rtlText]}>
+                  {order.date}
+                </Text>
+                <Text style={styles.orderItemStatus}>{order.status}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderChatScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.chatContent}>
+          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('chat')}
+          </Text>
+          <View style={styles.messagesContainer}>
+            {messages.length === 0 ? (
+              <Text style={[styles.emptyText, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('noMessages')}
+              </Text>
+            ) : (
+              messages.map(message => (
+                <View key={message.id} style={styles.messageItem}>
+                  <Text style={[styles.messageSender, currentLanguage === 'ar' && styles.rtlText]}>
+                    {message.sender}
+                  </Text>
+                  <Text style={[styles.messageText, currentLanguage === 'ar' && styles.rtlText]}>
+                    {message.text}
+                  </Text>
+                  <Text style={styles.messageTime}>{message.time}</Text>
+                </View>
+              ))
+            )}
+          </View>
+          <View style={styles.messageInputContainer}>
+            <TextInput
+              style={[styles.messageInput, currentLanguage === 'ar' && styles.rtlInput]}
+              placeholder={t('sendMessage')}
+              value={messageInput}
+              onChangeText={setMessageInput}
+              multiline
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+              <Text style={styles.sendButtonText}>{t('send')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderShopScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.shopContent}>
+          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('shop')}
+          </Text>
+          {mockShops.map(shop => (
+            <View key={shop.id} style={styles.shopItem}>
+              <Text style={[styles.shopName, currentLanguage === 'ar' && styles.rtlText]}>
+                {shop.name}
+              </Text>
+              <Text style={[styles.shopOwner, currentLanguage === 'ar' && styles.rtlText]}>
+                Owner: {shop.owner}
+              </Text>
+              <Text style={[styles.shopDescription, currentLanguage === 'ar' && styles.rtlText]}>
+                {shop.description}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+      {renderBottomTabs()}
+    </SafeAreaView>
+  );
+
+  const renderAdminPanel = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      {renderHeader()}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.adminContent}>
+          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            🦋 {t('adminPanel')}
+          </Text>
+          
+          <View style={styles.adminStats}>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>3</Text>
+              <Text style={[styles.statLabel, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('totalUsers')}
+              </Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>2</Text>
+              <Text style={[styles.statLabel, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('totalShops')}
+              </Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>2</Text>
+              <Text style={[styles.statLabel, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('totalProducts')}
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.adminActions}>
+            <TouchableOpacity style={styles.adminButton} onPress={manageUsers}>
+              <Text style={styles.adminButtonText}>{t('manageUsers')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.adminButton} onPress={manageProducts}>
+              <Text style={styles.adminButtonText}>{t('manageProducts')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={() => setShowLanguageModal(true)}
+            >
+              <Text style={styles.adminButtonText}>{t('changeLanguage')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.adminButton} onPress={handleLogout}>
+              <Text style={styles.adminButtonText}>{t('logout')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+
+  const renderLanguageModal = () => (
+    <Modal
+      visible={showLanguageModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowLanguageModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('changeLanguage')}
+          </Text>
+          
+          <TouchableOpacity
+            style={[styles.languageOption, currentLanguage === 'en' && styles.selectedLanguage]}
+            onPress={() => {
+              setCurrentLanguage('en');
+              setShowLanguageModal(false);
+            }}
+          >
+            <Text style={styles.languageOptionText}>🇺🇸 English</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.languageOption, currentLanguage === 'ar' && styles.selectedLanguage]}
+            onPress={() => {
+              setCurrentLanguage('ar');
+              setShowLanguageModal(false);
+            }}
+          >
+            <Text style={styles.languageOptionText}>🇸🇦 العربية</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.modalCancelButton}
+            onPress={() => setShowLanguageModal(false)}
+          >
+            <Text style={styles.modalCancelButtonText}>{t('cancel')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const renderLogoutModal = () => (
+    <Modal
+      visible={showLogoutModal}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setShowLogoutModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('confirmLogout')}
+          </Text>
+          <View style={styles.modalButtons}>
+            <TouchableOpacity style={styles.modalButton} onPress={confirmLogout}>
+              <Text style={styles.modalButtonText}>{t('yes')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modalCancelButton} 
+              onPress={() => setShowLogoutModal(false)}
+            >
+              <Text style={styles.modalCancelButtonText}>{t('no')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 
   // Main render logic
   if (!currentUser) {
     return (
       <View style={styles.appContainer}>
         {currentScreen === 'Login' && renderLoginScreen()}
+        {currentScreen === 'Register' && renderRegisterScreen()}
         {renderLanguageModal()}
+      </View>
+    );
+  }
+
+  if (currentUser.role === 'admin') {
+    return (
+      <View style={styles.appContainer}>
+        {renderAdminPanel()}
+        {renderLanguageModal()}
+        {renderLogoutModal()}
       </View>
     );
   }
 
   return (
     <View style={styles.appContainer}>
-      <Text style={styles.welcomeText}>Welcome to Leemaz!</Text>
-      <Text style={styles.subtitleText}>Your app is working correctly!</Text>
+      {currentScreen === 'Home' && renderHomeScreen()}
+      {currentScreen === 'Profile' && renderProfileScreen()}
+      {currentScreen === 'Favorites' && renderFavoritesScreen()}
+      {currentScreen === 'Orders' && renderOrdersScreen()}
+      {currentScreen === 'Chat' && renderChatScreen()}
+      {currentScreen === 'Shop' && renderShopScreen()}
+      {renderLanguageModal()}
+      {renderLogoutModal()}
     </View>
   );
 }
