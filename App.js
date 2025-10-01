@@ -862,9 +862,14 @@ export default function App() {
           
           <View style={styles.profileActions}>
             {currentUser?.role === 'seller' && (
-              <TouchableOpacity style={styles.actionButton} onPress={requestCredits}>
-                <Text style={styles.actionButtonText}>{t('requestCredits')}</Text>
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity style={styles.actionButton} onPress={() => setShowAddProductModal(true)}>
+                  <Text style={styles.actionButtonText}>{t('addProduct')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton} onPress={requestCredits}>
+                  <Text style={styles.actionButtonText}>{t('requestCredits')}</Text>
+                </TouchableOpacity>
+              </>
             )}
             
             <TouchableOpacity
