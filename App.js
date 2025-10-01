@@ -708,7 +708,7 @@ export default function App() {
               {t('categories')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {['all', 'clothing', 'jewelry', 'handicrafts'].map(category => (
+              {['all', 'clothing', 'jewelry', 'handicrafts', 'perfumes', 'herbal', 'soaps', 'candles', 'pottery', 'textiles', 'woodwork', 'metalwork', 'leather', 'baskets', 'spices', 'sweets', 'embroidery', 'rugs', 'bags', 'accessories', 'homeDecor', 'kitchenware', 'cosmetics', 'incense'].map(category => (
                 <TouchableOpacity
                   key={category}
                   style={[
