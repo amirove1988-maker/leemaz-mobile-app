@@ -1565,10 +1565,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
   },
-  logoText: {
-    fontSize: 28,
-    color: '#fff',
-  },
   logoFallback: {
     fontSize: 10,
     color: '#fff',
