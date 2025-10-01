@@ -257,7 +257,7 @@ eas build --platform android --profile preview
 ### **Your App Details:**
 - **Name**: Leemaz - Syrian Women's Marketplace
 - **Package**: com.leemaz.mobile
-- **Backend**: https://syrianwomen-shop.preview.emergentagent.com
+- **Backend**: https://ecom-logo-fix.preview.emergentagent.com
 - **Features**: Complete bilingual e-commerce platform
 - **Target**: Syrian women entrepreneurs worldwide
 

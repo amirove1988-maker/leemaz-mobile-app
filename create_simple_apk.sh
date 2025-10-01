@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient());
         
         // Load the Leemaz web app
-        webView.loadUrl("https://syrianwomen-shop.preview.emergentagent.com");
+        webView.loadUrl("https://ecom-logo-fix.preview.emergentagent.com");
     }
     
     @Override
