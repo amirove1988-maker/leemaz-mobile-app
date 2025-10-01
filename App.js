@@ -111,9 +111,6 @@ const { width, height } = Dimensions.get('window');
 const screenWidth = Math.min(width, 400);
 const screenHeight = Math.min(height, 800);
 
-// Leemaz Logo Base64 (Beautiful butterfly logo)
-const LEEMAZ_LOGO_BASE64 = "data:image/png;base64,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";
-
 // Translations
 const translations = {
   en: {
@@ -231,7 +228,19 @@ const translations = {
     faqs: 'Frequently Asked Questions',
     productName: 'Product Name',
     selectImage: 'Select Image',
-    imageSelected: 'Image Selected ✓'
+    imageSelected: 'Image Selected ✓',
+    notifications: 'Notifications',
+    noNotifications: 'No notifications yet',
+    newOrder: 'New Order Received!',
+    creditApproved: 'Credit Request Approved!',
+    encouragement: 'Keep up the great work!',
+    favoritePromotion: 'Check out your favorite products!',
+    sendNotification: 'Send Notification',
+    notificationSent: 'Notification Sent Successfully!',
+    encourageMessage: 'Message to encourage sellers',
+    promoteFavorites: 'Promote Favorite Products',
+    markAsRead: 'Mark as Read',
+    viewNotifications: 'View Notifications'
   },
   ar: {
     welcome: 'أهلاً بك في ليماز',
@@ -348,7 +357,19 @@ const translations = {
     faqs: 'الأسئلة الشائعة',
     productName: 'اسم المنتج',
     selectImage: 'اختيار صورة',
-    imageSelected: 'تم اختيار الصورة ✓'
+    imageSelected: 'تم اختيار الصورة ✓',
+    notifications: 'الإشعارات',
+    noNotifications: 'لا توجد إشعارات بعد',
+    newOrder: 'تم استلام طلب جديد!',
+    creditApproved: 'تم الموافقة على طلب الرصيد!',
+    encouragement: 'استمري في العمل الرائع!',
+    favoritePromotion: 'تفقدي منتجاتك المفضلة!',
+    sendNotification: 'إرسال إشعار',
+    notificationSent: 'تم إرسال الإشعار بنجاح!',
+    encourageMessage: 'رسالة لتشجيع البائعات',
+    promoteFavorites: 'ترويج المنتجات المفضلة',
+    markAsRead: 'وضع علامة كمقروءة',
+    viewNotifications: 'عرض الإشعارات'
   }
 };
 
@@ -393,6 +414,13 @@ export default function App() {
     image: null
   });
 
+  // Notification System State
+  const [notifications, setNotifications] = useState([]);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showSendNotificationModal, setShowSendNotificationModal] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
   // Set RTL for Arabic
   useEffect(() => {
     if (currentLanguage === 'ar') {
@@ -403,6 +431,42 @@ export default function App() {
   }, [currentLanguage]);
 
   const t = (key) => translations[currentLanguage][key] || key;
+
+  // Notification Functions
+  const sendNotification = (userId, type, message, title) => {
+    const notification = {
+      id: Date.now().toString(),
+      userId,
+      type,
+      title,
+      message,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+
+    setNotifications(prev => [notification, ...prev]);
+    
+    // If notification is for current user, show alert and increment unread count
+    if (userId === currentUser?.id || userId === 'all') {
+      setUnreadNotifications(prev => prev + 1);
+      Alert.alert(title, message);
+    }
+  };
+
+  const markNotificationAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(notif => 
+        notif.id === notificationId ? { ...notif, read: true } : notif
+      )
+    );
+    setUnreadNotifications(prev => Math.max(0, prev - 1));
+  };
+
+  const getUserNotifications = () => {
+    return notifications.filter(notif => 
+      notif.userId === currentUser?.id || notif.userId === 'all'
+    );
+  };
 
   const handleLogin = () => {
     const user = mockUsers[loginForm.email];
@@ -444,6 +508,8 @@ export default function App() {
     setCurrentScreen('Login');
     setShowLogoutModal(false);
     setLoginForm({ email: '', password: '' });
+    setNotifications([]);
+    setUnreadNotifications(0);
   };
 
   const navigateToScreen = (screenName) => {
@@ -454,6 +520,18 @@ export default function App() {
     if (!favorites.find(fav => fav.id === product.id)) {
       setFavorites([...favorites, product]);
       Alert.alert('Success', 'Added to favorites!');
+      
+      // Send notification to buyer about favorite product promotion
+      if (currentUser.role === 'buyer') {
+        setTimeout(() => {
+          sendNotification(
+            currentUser.id,
+            'promotion',
+            t('favoritePromotion'),
+            '🛍️ ' + t('promoteFavorites')
+          );
+        }, 30000); // Send after 30 seconds
+      }
     }
   };
 
@@ -470,6 +548,14 @@ export default function App() {
     };
     setOrders([...orders, newOrder]);
     Alert.alert('Success', 'Order placed successfully!');
+
+    // Send notification to seller about new order
+    sendNotification(
+      '2', // Mock seller ID
+      'order',
+      `New order for ${product.name} - $${product.price}`,
+      '🛒 ' + t('newOrder')
+    );
   };
 
   const sendMessage = () => {
@@ -489,6 +575,16 @@ export default function App() {
     Alert.alert('Credit Request', 'Your credit request has been submitted to the admin. You will be notified once approved.', [
       { text: 'OK', style: 'default' }
     ]);
+
+    // Simulate admin approval after 5 seconds
+    setTimeout(() => {
+      sendNotification(
+        currentUser.id,
+        'credit',
+        'Your credit request of 100 credits has been approved!',
+        '💰 ' + t('creditApproved')
+      );
+    }, 5000);
   };
 
   const manageUsers = () => {
@@ -548,6 +644,25 @@ export default function App() {
     setShowAddProductModal(false);
   };
 
+  const sendEncouragementNotification = () => {
+    if (!notificationMessage.trim()) {
+      Alert.alert('Error', 'Please enter a message');
+      return;
+    }
+
+    // Send to all sellers
+    sendNotification(
+      'all',
+      'encouragement',
+      notificationMessage,
+      '🌟 ' + t('encouragement')
+    );
+
+    Alert.alert('Success', t('notificationSent'));
+    setNotificationMessage('');
+    setShowSendNotificationModal(false);
+  };
+
   const getFilteredProducts = () => {
     let filtered = mockProducts;
     
@@ -569,16 +684,26 @@ export default function App() {
     <View style={[styles.header, currentLanguage === 'ar' && styles.rtlContainer]}>
       <View style={styles.headerContent}>
         <View style={styles.logoContainer}>
-          <Image 
-            source={{ uri: LEEMAZ_LOGO_BASE64 }}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
+          <Text style={styles.logoText}>🦋</Text>
+          <Text style={styles.logoFallback}>Leemaz</Text>
         </View>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>Leemaz</Text>
           <Text style={styles.headerSubtitle}>{t('subtitle')}</Text>
         </View>
+        {currentUser && (
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={() => setShowNotificationModal(true)}
+          >
+            <Text style={styles.notificationIcon}>🔔</Text>
+            {unreadNotifications > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>{unreadNotifications}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -1068,6 +1193,12 @@ export default function App() {
             <TouchableOpacity style={styles.adminButton} onPress={manageProducts}>
               <Text style={styles.adminButtonText}>{t('manageProducts')}</Text>
             </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.adminButton} 
+              onPress={() => setShowSendNotificationModal(true)}
+            >
+              <Text style={styles.adminButtonText}>📢 {t('sendNotification')}</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.adminButton}
               onPress={() => setShowLanguageModal(true)}
@@ -1081,6 +1212,105 @@ export default function App() {
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+
+  const renderNotificationModal = () => {
+    const userNotifications = getUserNotifications();
+    
+    return (
+      <Modal
+        visible={showNotificationModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowNotificationModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.largeModalContainer}>
+            <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+              🔔 {t('notifications')}
+            </Text>
+            
+            <ScrollView style={styles.modalScrollView}>
+              {userNotifications.length === 0 ? (
+                <Text style={[styles.emptyText, currentLanguage === 'ar' && styles.rtlText]}>
+                  {t('noNotifications')}
+                </Text>
+              ) : (
+                userNotifications.map(notification => (
+                  <View key={notification.id} style={[
+                    styles.notificationItem,
+                    !notification.read && styles.unreadNotification
+                  ]}>
+                    <Text style={[styles.notificationTitle, currentLanguage === 'ar' && styles.rtlText]}>
+                      {notification.title}
+                    </Text>
+                    <Text style={[styles.notificationMessage, currentLanguage === 'ar' && styles.rtlText]}>
+                      {notification.message}
+                    </Text>
+                    <Text style={styles.notificationTime}>
+                      {new Date(notification.timestamp).toLocaleString()}
+                    </Text>
+                    {!notification.read && (
+                      <TouchableOpacity
+                        style={styles.markReadButton}
+                        onPress={() => markNotificationAsRead(notification.id)}
+                      >
+                        <Text style={styles.markReadButtonText}>{t('markAsRead')}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))
+              )}
+            </ScrollView>
+            
+            <TouchableOpacity
+              style={styles.modalCancelButton}
+              onPress={() => setShowNotificationModal(false)}
+            >
+              <Text style={styles.modalCancelButtonText}>{t('cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const renderSendNotificationModal = () => (
+    <Modal
+      visible={showSendNotificationModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowSendNotificationModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            📢 {t('sendNotification')}
+          </Text>
+          
+          <TextInput
+            style={[styles.textArea, currentLanguage === 'ar' && styles.rtlInput]}
+            placeholder={t('encourageMessage')}
+            value={notificationMessage}
+            onChangeText={setNotificationMessage}
+            multiline
+            numberOfLines={4}
+          />
+          
+          <View style={styles.modalButtons}>
+            <TouchableOpacity style={styles.modalButton} onPress={sendEncouragementNotification}>
+              <Text style={styles.modalButtonText}>{t('send')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modalCancelButton} 
+              onPress={() => setShowSendNotificationModal(false)}
+            >
+              <Text style={styles.modalCancelButtonText}>{t('cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 
   const renderLanguageModal = () => (
@@ -1266,6 +1496,8 @@ export default function App() {
         {renderAdminPanel()}
         {renderLanguageModal()}
         {renderLogoutModal()}
+        {renderNotificationModal()}
+        {renderSendNotificationModal()}
       </View>
     );
   }
@@ -1281,6 +1513,7 @@ export default function App() {
       {renderLanguageModal()}
       {renderLogoutModal()}
       {renderAddProductModal()}
+      {renderNotificationModal()}
     </View>
   );
 }
@@ -1318,9 +1551,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
   },
-  logoImage: {
-    width: 35,
-    height: 35,
+  logoText: {
+    fontSize: 28,
+    color: '#fff',
+  },
+  logoFallback: {
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: 'bold',
+    position: 'absolute',
+    bottom: 0,
   },
   headerText: {
     flex: 1,
@@ -1334,6 +1574,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     opacity: 0.9,
+  },
+  notificationButton: {
+    position: 'relative',
+    padding: 8,
+  },
+  notificationIcon: {
+    fontSize: 24,
+    color: '#fff',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#ff4444',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   formContainer: {
     padding: 20,
@@ -1787,6 +2051,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  notificationItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  unreadNotification: {
+    backgroundColor: '#fff5f5',
+    borderColor: '#E91E63',
+  },
+  notificationTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  notificationMessage: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  notificationTime: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 10,
+  },
+  markReadButton: {
+    backgroundColor: '#E91E63',
+    padding: 8,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
+  },
+  markReadButtonText: {
+    color: '#fff',
+    fontSize: 12,
   },
   modalOverlay: {
     flex: 1,
