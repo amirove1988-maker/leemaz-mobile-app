@@ -497,6 +497,51 @@ export default function App() {
     ]);
   };
 
+  const pickImage = () => {
+    Alert.alert(
+      'Select Image',
+      'Choose how to select an image for your product:',
+      [
+        { text: 'Camera', onPress: () => mockImagePicker('camera') },
+        { text: 'Gallery', onPress: () => mockImagePicker('gallery') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  const mockImagePicker = (source) => {
+    // Mock image picker - in real app, this would use expo-image-picker
+    const mockImageBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=";
+    
+    setNewProduct({ ...newProduct, image: mockImageBase64 });
+    Alert.alert('Success', `Image selected from ${source}!`);
+  };
+
+  const addProduct = () => {
+    if (!newProduct.name || !newProduct.price || !newProduct.description) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    const product = {
+      id: Date.now().toString(),
+      name: newProduct.name,
+      price: parseFloat(newProduct.price),
+      category: newProduct.category,
+      description: newProduct.description,
+      shopId: '1', // Mock shop ID
+      shopName: 'My Shop',
+      image: newProduct.image
+    };
+
+    // In real app, this would be sent to backend
+    mockProducts.push(product);
+    
+    Alert.alert('Success', 'Product added successfully!');
+    setNewProduct({ name: '', price: '', category: 'handicrafts', description: '', image: null });
+    setShowAddProductModal(false);
+  };
+
   const getFilteredProducts = () => {
     let filtered = mockProducts;
     
