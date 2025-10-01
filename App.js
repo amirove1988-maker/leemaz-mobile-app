@@ -378,6 +378,14 @@ export default function App() {
     showPhone: false,
     allowMessages: true
   });
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    price: '',
+    category: 'handicrafts',
+    description: '',
+    image: null
+  });
 
   // Set RTL for Arabic
   useEffect(() => {
