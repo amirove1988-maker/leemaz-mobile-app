@@ -18,7 +18,7 @@
     "@react-navigation/elements": "^2.3.8",
     "@shopify/flash-list": "1.7.6",
     "axios": "^1.11.0",
-    "expo": "53.0.22",
+    "expo": "^54.0.12",
     "expo-blur": "~14.1.5",
     "expo-camera": "^16.1.11",
     "expo-constants": "~17.1.7",
