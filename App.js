@@ -1851,4 +1851,76 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16,
   },
+  largeModalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+    maxHeight: '80%',
+    minWidth: 320,
+  },
+  modalScrollView: {
+    maxHeight: 400,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
+    marginTop: 10,
+  },
+  categorySelector: {
+    marginBottom: 15,
+  },
+  categorySelectButton: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  activeCategorySelect: {
+    backgroundColor: '#E91E63',
+  },
+  categorySelectText: {
+    color: '#333',
+    fontSize: 12,
+  },
+  activeCategorySelectText: {
+    color: '#fff',
+  },
+  textArea: {
+    backgroundColor: '#f5f5f5',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  imagePickerButton: {
+    backgroundColor: '#f0f0f0',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  imagePickerButtonText: {
+    color: '#333',
+    fontSize: 16,
+  },
+  imagePreview: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
 });
