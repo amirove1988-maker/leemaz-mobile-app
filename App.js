@@ -1149,6 +1149,100 @@ export default function App() {
     </Modal>
   );
 
+  const renderAddProductModal = () => (
+    <Modal
+      visible={showAddProductModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowAddProductModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.largeModalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            {t('addProduct')}
+          </Text>
+          
+          <ScrollView style={styles.modalScrollView}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+                placeholder={t('productName')}
+                value={newProduct.name}
+                onChangeText={(text) => setNewProduct({...newProduct, name: text})}
+              />
+              
+              <TextInput
+                style={[styles.input, currentLanguage === 'ar' && styles.rtlInput]}
+                placeholder={t('price')}
+                value={newProduct.price}
+                onChangeText={(text) => setNewProduct({...newProduct, price: text})}
+                keyboardType="numeric"
+              />
+              
+              <Text style={[styles.inputLabel, currentLanguage === 'ar' && styles.rtlText]}>
+                {t('category')}:
+              </Text>
+              
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categorySelector}>
+                {['handicrafts', 'perfumes', 'herbal', 'soaps', 'candles', 'pottery', 'textiles', 'jewelry', 'clothing'].map(category => (
+                  <TouchableOpacity
+                    key={category}
+                    style={[
+                      styles.categorySelectButton,
+                      newProduct.category === category && styles.activeCategorySelect
+                    ]}
+                    onPress={() => setNewProduct({...newProduct, category})}
+                  >
+                    <Text style={[
+                      styles.categorySelectText,
+                      newProduct.category === category && styles.activeCategorySelectText,
+                      currentLanguage === 'ar' && styles.rtlText
+                    ]}>
+                      {t(category)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              
+              <TextInput
+                style={[styles.textArea, currentLanguage === 'ar' && styles.rtlInput]}
+                placeholder={t('description')}
+                value={newProduct.description}
+                onChangeText={(text) => setNewProduct({...newProduct, description: text})}
+                multiline
+                numberOfLines={4}
+              />
+              
+              <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+                <Text style={styles.imagePickerButtonText}>
+                  📷 {newProduct.image ? t('imageSelected') : t('selectImage')}
+                </Text>
+              </TouchableOpacity>
+              
+              {newProduct.image && (
+                <View style={styles.imagePreview}>
+                  <Image source={{ uri: newProduct.image }} style={styles.previewImage} />
+                </View>
+              )}
+            </View>
+          </ScrollView>
+          
+          <View style={styles.modalButtons}>
+            <TouchableOpacity style={styles.modalButton} onPress={addProduct}>
+              <Text style={styles.modalButtonText}>{t('addProduct')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modalCancelButton} 
+              onPress={() => setShowAddProductModal(false)}
+            >
+              <Text style={styles.modalCancelButtonText}>{t('cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   // Main render logic
   if (!currentUser) {
     return (
