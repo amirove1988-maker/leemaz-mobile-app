@@ -1576,6 +1576,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
   },
+  logoImage: {
+    width: 32,
+    height: 32,
+  },
   headerText: {
     flex: 1,
   },
