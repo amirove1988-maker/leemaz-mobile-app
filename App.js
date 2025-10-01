@@ -562,7 +562,7 @@ export default function App() {
       <StatusBar barStyle="dark-content" />
       {renderHeader()}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={[styles.formContainer, currentLanguage === 'ar' && styles.rtlContainer]}>
+        <View style={styles.formContainer}>
           <Text style={[styles.welcomeText, currentLanguage === 'ar' && styles.rtlText]}>
             {t('welcome')}
           </Text>
