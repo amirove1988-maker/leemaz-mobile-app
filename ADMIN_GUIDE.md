@@ -15,7 +15,7 @@ The Leemaz e-commerce platform now features:
 ### **Admin Login Credentials:**
 - **Email:** `admin@leemaz.com`
 - **Password:** `admin123`
-- **URL:** https://leemaz-mobileapp.preview.emergentagent.com
+- **URL:** https://syrianwomen-shop.preview.emergentagent.com
 
 ### **Login Steps:**
 1. Open the Leemaz mobile app
@@ -174,7 +174,7 @@ The Leemaz e-commerce platform now features:
 5. **Login as regular user** → Shop now visible to customers
 
 ### **Admin Panel Access:**
-- **URL:** https://leemaz-mobileapp.preview.emergentagent.com
+- **URL:** https://syrianwomen-shop.preview.emergentagent.com
 - **Email:** admin@leemaz.com  
 - **Password:** admin123
 

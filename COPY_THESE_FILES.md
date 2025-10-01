@@ -113,7 +113,7 @@ Create a new folder on your computer called `leemaz-project` and copy these file
 
 ### **4. .env**
 ```
-EXPO_PUBLIC_BACKEND_URL=https://leemaz-mobileapp.preview.emergentagent.com
+EXPO_PUBLIC_BACKEND_URL=https://syrianwomen-shop.preview.emergentagent.com
 ```
 
 ## **📁 Create This Folder Structure:**

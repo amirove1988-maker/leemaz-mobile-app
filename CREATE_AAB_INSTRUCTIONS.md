@@ -55,7 +55,7 @@ cd /app/frontend
 ✅ **App Name**: Leemaz - Syrian Women's Marketplace  
 ✅ **Package**: com.leemaz.mobile  
 ✅ **Version**: 1.0.0  
-✅ **Backend URL**: https://leemaz-mobileapp.preview.emergentagent.com  
+✅ **Backend URL**: https://syrianwomen-shop.preview.emergentagent.com  
 ✅ **Build Type**: Production AAB  
 ✅ **Features**: Complete bilingual Arabic/English with RTL support  
 
