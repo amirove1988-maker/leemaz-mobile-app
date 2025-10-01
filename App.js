@@ -13,6 +13,7 @@ import {
   Dimensions,
   Platform,
   I18nManager,
+  Image,
 } from 'react-native';
 
 // Mock user data
