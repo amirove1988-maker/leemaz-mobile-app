@@ -1100,7 +1100,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   logoImage: {
-    fontSize: 32,
+    width: 35,
+    height: 35,
   },
   headerText: {
     flex: 1,
