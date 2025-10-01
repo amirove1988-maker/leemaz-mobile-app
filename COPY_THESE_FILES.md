@@ -113,7 +113,7 @@ Create a new folder on your computer called `leemaz-project` and copy these file
 
 ### **4. .env**
 ```
-EXPO_PUBLIC_BACKEND_URL=https://ecom-logo-fix.preview.emergentagent.com
+EXPO_PUBLIC_BACKEND_URL=https://ecom-bilingual.preview.emergentagent.com
 ```
 
 ## **📁 Create This Folder Structure:**
