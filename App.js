@@ -83,6 +83,26 @@ const mockProducts = [
     shopName: 'Handmade Treasures',
     image: null,
   },
+  {
+    id: '3',
+    name: 'Rose Perfume Oil',
+    price: 25,
+    category: 'perfumes',
+    description: 'Natural Syrian rose perfume oil',
+    shopId: '2',
+    shopName: 'Traditional Crafts',
+    image: null,
+  },
+  {
+    id: '4',
+    name: 'Herbal Tea Mix',
+    price: 15,
+    category: 'herbal',
+    description: 'Traditional Syrian herbal tea blend',
+    shopId: '2',
+    shopName: 'Traditional Crafts',
+    image: null,
+  },
 ];
 
 const { width, height } = Dimensions.get('window');
