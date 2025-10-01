@@ -1280,6 +1280,7 @@ export default function App() {
       {currentScreen === 'Shop' && renderShopScreen()}
       {renderLanguageModal()}
       {renderLogoutModal()}
+      {renderAddProductModal()}
     </View>
   );
 }
