@@ -228,7 +228,10 @@ const translations = {
     helpCenter: 'Help Center',
     contactSupport: 'Contact Support',
     reportIssue: 'Report an Issue',
-    faqs: 'Frequently Asked Questions'
+    faqs: 'Frequently Asked Questions',
+    productName: 'Product Name',
+    selectImage: 'Select Image',
+    imageSelected: 'Image Selected ✓'
   },
   ar: {
     welcome: 'أهلاً بك في ليماز',
