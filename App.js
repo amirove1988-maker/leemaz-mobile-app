@@ -1168,9 +1168,16 @@ export default function App() {
       {renderHeader()}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.adminContent}>
-          <Text style={[styles.screenTitle, currentLanguage === 'ar' && styles.rtlText]}>
-            🦋 {t('adminPanel')}
-          </Text>
+          <View style={[styles.adminTitleContainer, currentLanguage === 'ar' && styles.rtlContainer]}>
+            <Image 
+              source={{ uri: LEEMAZ_LOGO_BASE64 }}
+              style={styles.adminLogoImage}
+              resizeMode="contain"
+            />
+            <Text style={[styles.screenTitle, styles.adminTitle, currentLanguage === 'ar' && styles.rtlText]}>
+              {t('adminPanel')}
+            </Text>
+          </View>
           
           <View style={styles.adminStats}>
             <View style={styles.statCard}>
