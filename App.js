@@ -1813,6 +1813,211 @@ export default function App() {
     </Modal>
   );
 
+  // Subscription Modal
+  const renderSubscriptionModal = () => (
+    <Modal
+      visible={showSubscriptionModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowSubscriptionModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.largeModalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            🚀 Choose Your Plan
+          </Text>
+          
+          <ScrollView style={styles.modalScrollView}>
+            {/* Free Trial Option */}
+            {!currentUser?.subscription?.trialUsed && !currentUser?.subscription && (
+              <TouchableOpacity style={[styles.planCard, styles.trialCard]} onPress={startFreeTrial}>
+                <Text style={styles.planTitle}>🎁 FREE TRIAL</Text>
+                <Text style={styles.planPrice}>$0</Text>
+                <Text style={styles.planDuration}>7 days free</Text>
+                <Text style={styles.planFeature}>• Up to 25 products</Text>
+                <Text style={styles.planFeature}>• All seller features</Text>
+                <Text style={styles.planFeature}>• No credit card required</Text>
+              </TouchableOpacity>
+            )}
+            
+            {/* Monthly Plan */}
+            <TouchableOpacity 
+              style={[styles.planCard, styles.monthlyCard]} 
+              onPress={() => handleSubscriptionUpgrade('monthly')}
+            >
+              <Text style={styles.planTitle}>📅 MONTHLY PLAN</Text>
+              <Text style={styles.planPrice}>${SUBSCRIPTION_PLANS.monthly.price}</Text>
+              <Text style={styles.planDuration}>per month</Text>
+              <Text style={styles.planFeature}>• Up to 25 products</Text>
+              <Text style={styles.planFeature}>• Priority support</Text>
+              <Text style={styles.planFeature}>• Advanced analytics</Text>
+              <Text style={styles.planFeature}>• Extra products: $2 each</Text>
+            </TouchableOpacity>
+            
+            {/* Yearly Plan */}
+            <TouchableOpacity 
+              style={[styles.planCard, styles.yearlyCard]} 
+              onPress={() => handleSubscriptionUpgrade('yearly')}
+            >
+              <Text style={styles.planTitle}>🎯 YEARLY PLAN</Text>
+              <Text style={styles.planPrice}>${SUBSCRIPTION_PLANS.yearly.price}</Text>
+              <Text style={styles.planDuration}>per year</Text>
+              <Text style={styles.planSavings}>💰 Save $40!</Text>
+              <Text style={styles.planFeature}>• Up to 25 products</Text>
+              <Text style={styles.planFeature}>• Priority support</Text>
+              <Text style={styles.planFeature}>• Advanced analytics</Text>
+              <Text style={styles.planFeature}>• Extra products: $2 each</Text>
+              <Text style={styles.planFeature}>• Best value!</Text>
+            </TouchableOpacity>
+          </ScrollView>
+          
+          <TouchableOpacity 
+            style={styles.modalCancelButton} 
+            onPress={() => setShowSubscriptionModal(false)}
+          >
+            <Text style={styles.modalCancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // Credit Request Modal
+  const renderCreditRequestModal = () => (
+    <Modal
+      visible={showCreditRequestModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowCreditRequestModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.largeModalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            💳 Request Extra Products
+          </Text>
+          
+          <Text style={[styles.inputLabel, currentLanguage === 'ar' && styles.rtlText]}>
+            Number of extra products (1-50):
+          </Text>
+          <TextInput
+            style={[styles.input, currentLanguage === 'ar' && styles.rtlText]}
+            value={creditRequestForm.credits}
+            onChangeText={(text) => setCreditRequestForm({...creditRequestForm, credits: text})}
+            placeholder="e.g., 10"
+            keyboardType="numeric"
+          />
+          
+          <Text style={[styles.inputLabel, currentLanguage === 'ar' && styles.rtlText]}>
+            Reason for request:
+          </Text>
+          <TextInput
+            style={[styles.textArea, currentLanguage === 'ar' && styles.rtlText]}
+            value={creditRequestForm.reason}
+            onChangeText={(text) => setCreditRequestForm({...creditRequestForm, reason: text})}
+            placeholder="e.g., New collection launch, seasonal products..."
+            multiline
+          />
+          
+          {creditRequestForm.credits && (
+            <View style={styles.priceCalculation}>
+              <Text style={styles.calculationText}>
+                {creditRequestForm.credits} products × ${EXTRA_PRODUCT_PRICE} = ${creditRequestForm.credits * EXTRA_PRODUCT_PRICE}
+              </Text>
+              <Text style={styles.calculationNote}>
+                💡 Payment will be processed after admin approval
+              </Text>
+            </View>
+          )}
+          
+          <View style={styles.modalButtons}>
+            <TouchableOpacity style={styles.modalButton} onPress={handleCreditRequest}>
+              <Text style={styles.modalButtonText}>Submit Request</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modalCancelButton} 
+              onPress={() => setShowCreditRequestModal(false)}
+            >
+              <Text style={styles.modalCancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // Credit Management Modal (for Admin)
+  const renderCreditManagementModal = () => (
+    <Modal
+      visible={showCreditManagementModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowCreditManagementModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.largeModalContainer}>
+          <Text style={[styles.modalTitle, currentLanguage === 'ar' && styles.rtlText]}>
+            🎛️ Credit Requests Management
+          </Text>
+          
+          <ScrollView style={styles.modalScrollView}>
+            {creditRequests.length === 0 ? (
+              <Text style={styles.emptyText}>No credit requests pending</Text>
+            ) : (
+              creditRequests.map(request => (
+                <View key={request.id} style={[styles.creditRequestItem, 
+                  request.status === 'pending' && styles.pendingRequest,
+                  request.status === 'approved' && styles.approvedRequest,
+                  request.status === 'rejected' && styles.rejectedRequest
+                ]}>
+                  <Text style={styles.requestSeller}>{request.sellerName}</Text>
+                  <Text style={styles.requestDetails}>
+                    {request.requestedCredits} products × ${request.pricePerCredit} = ${request.totalPrice}
+                  </Text>
+                  <Text style={styles.requestReason}>"{request.reason}"</Text>
+                  <Text style={styles.requestDate}>
+                    {new Date(request.createdAt).toLocaleDateString()}
+                  </Text>
+                  
+                  {request.status === 'pending' && (
+                    <View style={styles.requestActions}>
+                      <TouchableOpacity 
+                        style={[styles.actionButton, styles.approveButton]}
+                        onPress={() => handleCreditRequestAction(request.id, 'approved')}
+                      >
+                        <Text style={styles.actionButtonText}>✅ Approve</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        style={[styles.actionButton, styles.rejectButton]}
+                        onPress={() => handleCreditRequestAction(request.id, 'rejected')}
+                      >
+                        <Text style={styles.actionButtonText}>❌ Reject</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  
+                  {request.status !== 'pending' && (
+                    <Text style={[styles.requestStatus, 
+                      request.status === 'approved' ? styles.approvedStatus : styles.rejectedStatus
+                    ]}>
+                      {request.status === 'approved' ? '✅ APPROVED' : '❌ REJECTED'}
+                    </Text>
+                  )}
+                </View>
+              ))
+            )}
+          </ScrollView>
+          
+          <TouchableOpacity 
+            style={styles.modalCancelButton} 
+            onPress={() => setShowCreditManagementModal(false)}
+          >
+            <Text style={styles.modalCancelButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   // Main render logic
   if (!currentUser) {
     return (
