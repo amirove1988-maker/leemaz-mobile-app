@@ -2054,6 +2054,8 @@ export default function App() {
       {renderLogoutModal()}
       {renderAddProductModal()}
       {renderNotificationModal()}
+      {renderSubscriptionModal()}
+      {renderCreditRequestModal()}
     </View>
   );
 }
