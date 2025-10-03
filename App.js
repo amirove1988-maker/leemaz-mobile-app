@@ -53,6 +53,43 @@ const mockUsers = {
   },
 };
 
+// Subscription plans
+const SUBSCRIPTION_PLANS = {
+  monthly: {
+    name: 'Monthly Plan',
+    price: 20,
+    currency: 'USD',
+    duration: 30, // days
+    maxProducts: 25,
+    trialDays: 7,
+  },
+  yearly: {
+    name: 'Yearly Plan',
+    price: 200,
+    currency: 'USD',
+    duration: 365, // days
+    maxProducts: 25,
+    trialDays: 7,
+  }
+};
+
+const EXTRA_PRODUCT_PRICE = 2; // USD per extra product
+
+// Mock credit requests
+let mockCreditRequests = [
+  {
+    id: '1',
+    sellerId: '2',
+    sellerName: 'Fatima Al-Rashid',
+    requestedCredits: 10,
+    pricePerCredit: EXTRA_PRODUCT_PRICE,
+    totalPrice: 20,
+    status: 'pending', // 'pending', 'approved', 'rejected'
+    createdAt: new Date('2024-01-15'),
+    reason: 'Need to add more products for upcoming collection'
+  }
+];
+
 // Mock shops data
 const mockShops = [
   {
