@@ -1319,10 +1319,29 @@ export default function App() {
                 <TouchableOpacity style={styles.actionButton} onPress={() => setShowAddProductModal(true)}>
                   <Text style={styles.actionButtonText}>{t('addProduct')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton} onPress={requestCredits}>
-                  <Text style={styles.actionButtonText}>{t('requestCredits')}</Text>
-                </TouchableOpacity>
+                
+                {checkSubscriptionStatus(currentUser) ? (
+                  <TouchableOpacity style={styles.actionButton} onPress={() => setShowCreditRequestModal(true)}>
+                    <Text style={styles.actionButtonText}>💳 Request Extra Products</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={[styles.actionButton, styles.subscribeButton]} onPress={() => setShowSubscriptionModal(true)}>
+                    <Text style={styles.actionButtonText}>🚀 Subscribe Now</Text>
+                  </TouchableOpacity>
+                )}
+                
+                {currentUser.subscription && checkSubscriptionStatus(currentUser) && (
+                  <TouchableOpacity style={styles.actionButton} onPress={() => setShowSubscriptionModal(true)}>
+                    <Text style={styles.actionButtonText}>⬆️ Upgrade Plan</Text>
+                  </TouchableOpacity>
+                )}
               </>
+            )}
+            
+            {currentUser?.role === 'admin' && (
+              <TouchableOpacity style={styles.actionButton} onPress={() => setShowCreditManagementModal(true)}>
+                <Text style={styles.actionButtonText}>🎛️ Manage Credit Requests</Text>
+              </TouchableOpacity>
             )}
             
             <TouchableOpacity
