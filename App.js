@@ -34,6 +34,15 @@ const mockUsers = {
     name: 'Fatima Al-Rashid',
     role: 'seller',
     credits: 75,
+    subscription: {
+      type: 'monthly', // 'monthly' or 'yearly' or 'trial'
+      status: 'active', // 'active', 'expired', 'trial'
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-02-01'),
+      productsUsed: 15,
+      maxProducts: 25,
+      trialUsed: false,
+    },
   },
   'admin@leemaz.com': {
     id: '3',
