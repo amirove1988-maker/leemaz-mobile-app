@@ -169,7 +169,7 @@
 4. **Improve Chat with Real-time Updates** (2 hours)
 
 ### **📱 READY FOR TESTING:**
-- **URL**: https://syria-commerce.preview.emergentagent.com
+- **URL**: https://leemaz-subs.preview.emergentagent.com
 - **Admin**: admin@leemaz.com / admin123
 - **Features**: Shop approval, credit management, product creation
 
