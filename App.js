@@ -2781,4 +2781,177 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
   },
+  
+  // Subscription Styles
+  subscriptionInfo: {
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 15,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  subscriptionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subscriptionText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  trialText: {
+    color: '#28a745',
+    fontWeight: 'bold',
+  },
+  subscribeButton: {
+    backgroundColor: '#28a745',
+  },
+  
+  // Plan Card Styles
+  planCard: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: '#e9ecef',
+    alignItems: 'center',
+  },
+  trialCard: {
+    borderColor: '#28a745',
+    backgroundColor: '#f8fff9',
+  },
+  monthlyCard: {
+    borderColor: '#007bff',
+    backgroundColor: '#f8fcff',
+  },
+  yearlyCard: {
+    borderColor: '#ffc107',
+    backgroundColor: '#fffef8',
+  },
+  planTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  planPrice: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#E91E63',
+    marginBottom: 5,
+  },
+  planDuration: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 10,
+  },
+  planSavings: {
+    fontSize: 14,
+    color: '#28a745',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  planFeature: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 3,
+    textAlign: 'center',
+  },
+  
+  // Credit Request Styles
+  priceCalculation: {
+    backgroundColor: '#e7f3ff',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  calculationText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  calculationNote: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  
+  // Credit Management Styles
+  creditRequestItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  pendingRequest: {
+    borderColor: '#ffc107',
+    backgroundColor: '#fffef8',
+  },
+  approvedRequest: {
+    borderColor: '#28a745',
+    backgroundColor: '#f8fff9',
+  },
+  rejectedRequest: {
+    borderColor: '#dc3545',
+    backgroundColor: '#fff5f5',
+  },
+  requestSeller: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  requestDetails: {
+    fontSize: 14,
+    color: '#E91E63',
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  requestReason: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+    fontStyle: 'italic',
+  },
+  requestDate: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 10,
+  },
+  requestActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  approveButton: {
+    backgroundColor: '#28a745',
+  },
+  rejectButton: {
+    backgroundColor: '#dc3545',
+  },
+  requestStatus: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 8,
+    borderRadius: 5,
+  },
+  approvedStatus: {
+    color: '#28a745',
+    backgroundColor: '#f8fff9',
+  },
+  rejectedStatus: {
+    color: '#dc3545',
+    backgroundColor: '#fff5f5',
+  },
 });
