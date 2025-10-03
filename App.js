@@ -814,21 +814,7 @@ export default function App() {
     }
   };
 
-  const requestCredits = () => {
-    Alert.alert('Credit Request', 'Your credit request has been submitted to the admin. You will be notified once approved.', [
-      { text: 'OK', style: 'default' }
-    ]);
-
-    // Simulate admin approval after 5 seconds
-    setTimeout(() => {
-      sendNotification(
-        currentUser.id,
-        'credit',
-        'Your credit request of 100 credits has been approved!',
-        '💰 ' + t('creditApproved')
-      );
-    }, 5000);
-  };
+  // Credit request function removed - replaced with new subscription system
 
   const manageUsers = () => {
     Alert.alert('User Management', 'Admin User Management Features:\n\n• View all registered users\n• Approve seller accounts\n• Manage user credits\n• Handle user reports\n• Send notifications to users', [
