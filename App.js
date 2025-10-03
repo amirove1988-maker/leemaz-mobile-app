@@ -2037,6 +2037,7 @@ export default function App() {
         {renderLogoutModal()}
         {renderNotificationModal()}
         {renderSendNotificationModal()}
+        {renderCreditManagementModal()}
       </View>
     );
   }
