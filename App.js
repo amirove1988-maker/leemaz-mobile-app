@@ -863,6 +863,32 @@ export default function App() {
   };
 
   const addProduct = () => {
+    // Check subscription status
+    if (!checkSubscriptionStatus(currentUser)) {
+      Alert.alert(
+        'Subscription Required', 
+        'You need an active subscription to add products. Would you like to subscribe now?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Subscribe', onPress: () => setShowSubscriptionModal(true) }
+        ]
+      );
+      return;
+    }
+
+    // Check product limit
+    if (!canAddMoreProducts(currentUser)) {
+      Alert.alert(
+        'Product Limit Reached', 
+        `You've reached your limit of ${currentUser.subscription.maxProducts} products. You can request additional product slots for $${EXTRA_PRODUCT_PRICE} each.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Request More', onPress: () => setShowCreditRequestModal(true) }
+        ]
+      );
+      return;
+    }
+
     if (!newProduct.name || !newProduct.price || !newProduct.description) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
@@ -882,7 +908,18 @@ export default function App() {
     // In real app, this would be sent to backend
     mockProducts.push(product);
     
-    Alert.alert('Success', 'Product added successfully!');
+    // Update products used count
+    const updatedUser = {
+      ...currentUser,
+      subscription: {
+        ...currentUser.subscription,
+        productsUsed: currentUser.subscription.productsUsed + 1
+      }
+    };
+    setCurrentUser(updatedUser);
+    mockUsers[currentUser.email] = updatedUser;
+    
+    Alert.alert('Success', `Product added successfully! You have ${updatedUser.subscription.maxProducts - updatedUser.subscription.productsUsed} product slots remaining.`);
     setNewProduct({ name: '', price: '', category: 'handicrafts', description: '', image: null });
     setShowAddProductModal(false);
   };
