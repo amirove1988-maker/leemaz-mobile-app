@@ -470,6 +470,16 @@ export default function App() {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
+  // Subscription System State
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showCreditRequestModal, setShowCreditRequestModal] = useState(false);
+  const [showCreditManagementModal, setShowCreditManagementModal] = useState(false);
+  const [creditRequests, setCreditRequests] = useState(mockCreditRequests);
+  const [creditRequestForm, setCreditRequestForm] = useState({
+    credits: '',
+    reason: ''
+  });
+
   // Set RTL for Arabic
   useEffect(() => {
     if (currentLanguage === 'ar') {
