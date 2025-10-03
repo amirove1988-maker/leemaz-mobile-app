@@ -527,6 +527,190 @@ export default function App() {
     );
   };
 
+  // Subscription Functions
+  const checkSubscriptionStatus = (user) => {
+    if (!user?.subscription) return false;
+    const now = new Date();
+    return user.subscription.endDate > now && user.subscription.status === 'active';
+  };
+
+  const canAddMoreProducts = (user) => {
+    if (!user?.subscription) return false;
+    return user.subscription.productsUsed < user.subscription.maxProducts;
+  };
+
+  const daysUntilExpiry = (user) => {
+    if (!user?.subscription) return 0;
+    const now = new Date();
+    const diffTime = user.subscription.endDate - now;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const handleSubscriptionUpgrade = (planType) => {
+    const plan = SUBSCRIPTION_PLANS[planType];
+    const newEndDate = new Date();
+    newEndDate.setDate(newEndDate.getDate() + plan.duration);
+    
+    // Update user subscription
+    const updatedUser = {
+      ...currentUser,
+      subscription: {
+        type: planType,
+        status: 'active',
+        startDate: new Date(),
+        endDate: newEndDate,
+        productsUsed: currentUser.subscription?.productsUsed || 0,
+        maxProducts: plan.maxProducts,
+        trialUsed: currentUser.subscription?.trialUsed || false,
+      }
+    };
+    
+    setCurrentUser(updatedUser);
+    mockUsers[currentUser.email] = updatedUser;
+    setShowSubscriptionModal(false);
+    
+    Alert.alert(
+      'Subscription Updated',
+      `Successfully subscribed to ${plan.name} for $${plan.price}. Your subscription is valid until ${newEndDate.toLocaleDateString()}.`
+    );
+    
+    // Send notification
+    sendNotification(
+      currentUser.id,
+      'subscription',
+      `Your ${plan.name} subscription is now active!`,
+      '🎉 Subscription Active'
+    );
+  };
+
+  const startFreeTrial = () => {
+    if (currentUser.subscription?.trialUsed) {
+      Alert.alert('Error', 'Free trial already used for this account.');
+      return;
+    }
+
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + SUBSCRIPTION_PLANS.monthly.trialDays);
+    
+    const updatedUser = {
+      ...currentUser,
+      subscription: {
+        type: 'trial',
+        status: 'active',
+        startDate: new Date(),
+        endDate: trialEndDate,
+        productsUsed: currentUser.subscription?.productsUsed || 0,
+        maxProducts: SUBSCRIPTION_PLANS.monthly.maxProducts,
+        trialUsed: true,
+      }
+    };
+    
+    setCurrentUser(updatedUser);
+    mockUsers[currentUser.email] = updatedUser;
+    setShowSubscriptionModal(false);
+    
+    Alert.alert(
+      'Free Trial Started',
+      `Your 7-day free trial has started! You can add up to ${SUBSCRIPTION_PLANS.monthly.maxProducts} products.`
+    );
+    
+    sendNotification(
+      currentUser.id,
+      'trial',
+      'Your 7-day free trial has started! Welcome to Leemaz seller services.',
+      '🚀 Trial Started'
+    );
+  };
+
+  const handleCreditRequest = () => {
+    if (!creditRequestForm.credits || !creditRequestForm.reason) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+
+    const credits = parseInt(creditRequestForm.credits);
+    if (credits <= 0 || credits > 50) {
+      Alert.alert('Error', 'Credits must be between 1 and 50');
+      return;
+    }
+
+    const newRequest = {
+      id: Date.now().toString(),
+      sellerId: currentUser.id,
+      sellerName: currentUser.name,
+      requestedCredits: credits,
+      pricePerCredit: EXTRA_PRODUCT_PRICE,
+      totalPrice: credits * EXTRA_PRODUCT_PRICE,
+      status: 'pending',
+      createdAt: new Date(),
+      reason: creditRequestForm.reason
+    };
+
+    setCreditRequests(prev => [newRequest, ...prev]);
+    setCreditRequestForm({ credits: '', reason: '' });
+    setShowCreditRequestModal(false);
+    
+    Alert.alert(
+      'Request Submitted',
+      `Credit request for ${credits} products ($${credits * EXTRA_PRODUCT_PRICE}) has been submitted for admin approval.`
+    );
+
+    // Notify admin
+    sendNotification(
+      '3', // admin ID
+      'credit_request',
+      `${currentUser.name} requested ${credits} extra product credits for $${credits * EXTRA_PRODUCT_PRICE}`,
+      '💳 New Credit Request'
+    );
+  };
+
+  const handleCreditRequestAction = (requestId, action) => {
+    setCreditRequests(prev =>
+      prev.map(req => {
+        if (req.id === requestId) {
+          const updatedRequest = { ...req, status: action };
+          
+          if (action === 'approved') {
+            // Update seller's available products
+            const seller = mockUsers[Object.keys(mockUsers).find(key => 
+              mockUsers[key].id === req.sellerId
+            )];
+            
+            if (seller?.subscription) {
+              seller.subscription.maxProducts += req.requestedCredits;
+              mockUsers[Object.keys(mockUsers).find(key => 
+                mockUsers[key].id === req.sellerId
+              )] = seller;
+              
+              // Update current user if it's the seller
+              if (currentUser?.id === req.sellerId) {
+                setCurrentUser(seller);
+              }
+            }
+            
+            // Send notification to seller
+            sendNotification(
+              req.sellerId,
+              'approval',
+              `Your request for ${req.requestedCredits} extra product slots has been approved!`,
+              '✅ Credit Request Approved'
+            );
+          } else {
+            sendNotification(
+              req.sellerId,
+              'rejection',
+              `Your request for ${req.requestedCredits} extra product slots has been rejected.`,
+              '❌ Credit Request Rejected'
+            );
+          }
+          
+          return updatedRequest;
+        }
+        return req;
+      })
+    );
+  };
+
   const handleLogin = () => {
     const user = mockUsers[loginForm.email];
     if (user && loginForm.password === 'password123') {
