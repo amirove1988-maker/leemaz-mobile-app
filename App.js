@@ -1273,6 +1273,44 @@ export default function App() {
             <Text style={[styles.profileCredits, currentLanguage === 'ar' && styles.rtlText]}>
               {t('credits')}: {currentUser?.credits}
             </Text>
+            
+            {/* Subscription Information for Sellers */}
+            {currentUser?.role === 'seller' && (
+              <View style={styles.subscriptionInfo}>
+                <Text style={[styles.subscriptionTitle, currentLanguage === 'ar' && styles.rtlText]}>
+                  📋 Subscription Status
+                </Text>
+                {currentUser.subscription ? (
+                  <>
+                    <Text style={[styles.subscriptionText, currentLanguage === 'ar' && styles.rtlText]}>
+                      Plan: {currentUser.subscription.type === 'trial' ? '🚀 Free Trial' : 
+                             currentUser.subscription.type === 'monthly' ? '📅 Monthly Plan' : '🎯 Yearly Plan'}
+                    </Text>
+                    <Text style={[styles.subscriptionText, currentLanguage === 'ar' && styles.rtlText]}>
+                      Status: {checkSubscriptionStatus(currentUser) ? '✅ Active' : '❌ Expired'}
+                    </Text>
+                    <Text style={[styles.subscriptionText, currentLanguage === 'ar' && styles.rtlText]}>
+                      Products: {currentUser.subscription.productsUsed}/{currentUser.subscription.maxProducts}
+                    </Text>
+                    <Text style={[styles.subscriptionText, currentLanguage === 'ar' && styles.rtlText]}>
+                      {checkSubscriptionStatus(currentUser) ? 
+                        `⏰ ${daysUntilExpiry(currentUser)} days left` : 
+                        '⚠️ Subscription expired'
+                      }
+                    </Text>
+                    {currentUser.subscription.type === 'trial' && (
+                      <Text style={[styles.subscriptionText, styles.trialText, currentLanguage === 'ar' && styles.rtlText]}>
+                        🎁 Free trial active!
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <Text style={[styles.subscriptionText, currentLanguage === 'ar' && styles.rtlText]}>
+                    ❌ No active subscription
+                  </Text>
+                )}
+              </View>
+            )}
           </View>
           
           <View style={styles.profileActions}>
